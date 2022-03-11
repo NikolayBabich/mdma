@@ -1,0 +1,34 @@
+openapi: "3.0.0"
+info:
+  title: Транспортные объекты сервисов DM
+  version: 1.0.0
+paths:
+  /dummy:
+    get:
+      responses:
+        '200':
+          description: Фиктивный
+components:
+  schemas:
+    AccessRequestDto:
+      type: object
+      description: Запрос прав доступа для роли
+      required:
+        - role
+        - version
+      properties:
+        role:
+          type: string
+        version:
+          type: string
+    AccessDto:
+      type: object
+      description: Права доступа к полям сущностей
+      required:
+        - entity
+        - property
+      properties:
+        entity:
+          type: string
+        property:
+          type: string

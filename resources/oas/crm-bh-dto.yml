@@ -1,0 +1,100 @@
+openapi: "3.0.0"
+info:
+  title: Транспортные объекты сервисов CRM-BH
+  version: 1.0.0
+paths:
+  /dummy:
+    get:
+      responses:
+        '200':
+          description: Фиктивный
+components:
+  schemas:
+    ClientDto:
+      type: object
+      description: Клиент банка, Физ. лицо
+      required:
+        - id
+        - lastname
+        - firstname
+        - birthDate
+        - passportSeries
+        - passportNumber
+        - inn
+      properties:
+        id:
+          type: string
+        lastname:
+          type: string
+        firstname:
+          type: string
+        patronymic:
+          type: string
+        birthDate:
+          type: string
+        passportSeries:
+          type: string
+        passportNumber:
+          type: string
+        inn:
+          type: string
+        address:
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactDto'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountDto'
+    AccountDto:
+      type: object
+      description: Банковские счета клиента
+      required:
+        - number
+        - clientId
+        - type
+        - currency
+        - status
+        - openDate
+      properties:
+        number:
+          type: string
+        clientId:
+          type: string
+        type:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+        openDate:
+          type: string
+        closeDate:
+          type: string
+        deferment:
+          type: string
+        shortcut:
+          type: string
+        balanceAmount:
+          type: string
+    ContactDto:
+      type: object
+      description: Контактные данные клиента
+      required:
+        - id
+        - clientId
+        - type
+        - value
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+        shortcut:
+          type: string

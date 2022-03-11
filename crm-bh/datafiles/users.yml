@@ -1,0 +1,8 @@
+- username: "mlsidorova"
+  password: "$2a$10$Unqivkt.VflBDQf/7WJlYe0YDMo728Sh5.S3gKPh1Ho9TZaCTXBFq"
+  role: "MANAGER"
+  comment: "Пароль PYx16GvL"
+- username: "agterentyeva"
+  password: "$2a$10$5tqlHe/Px5k.tJVsldxAD.TMEmsLnTQyrCiYibha8C/J8hQbULsPm"
+  role: "SUPERVISOR"
+  comment: "Пароль ojwkFc2k"

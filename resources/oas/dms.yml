@@ -1,0 +1,218 @@
+openapi: "3.0.0"
+info:
+  title: Data Masking System Application
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081/dm
+paths:
+  /client:
+    post:
+      summary: Запрос клиентов
+      operationId: getClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientSearchDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Информации о клиенте найдена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientDto"
+  /client/contact:
+    post:
+      summary: Запрос контактов клиента
+      operationId: getContact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientIdDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Информации о контактах найдена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactDto"
+  /client/account:
+    post:
+      summary: Запрос счетов клиента
+      operationId: getAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientIdDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Информации о счетах найдена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccountDto"
+  /client/account/balance:
+    post:
+      summary: Запрос баланса по счету
+      operationId: getAccountBalance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountNumberDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Баланс по счету определен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentBalanceDto"
+  /client/account/operation:
+    post:
+      summary: Запрос операций по счету
+      operationId: getAccountOperations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OperationSearchDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Операции по счету найдены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OperationDto"
+  /client/contact/save:
+    post:
+      summary: Сохранение контакта клиента
+      operationId: saveContact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Контакт клиента сохранен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactDto"
+        '400':
+          description: Клиент не найден
+  /client/level:
+    post:
+      summary: Получение уровня клиента
+      operationId: getClientLevel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientIdDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Уровень клиента определен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientLevelDto"
+        '400':
+          description: Клиент не найден
+  /client/account/loan-payment:
+    post:
+      summary: Получение суммы процентных платежей по счету Овердрафт
+      operationId: getLoanPayment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountNumberDto"
+        required: true
+      parameters:
+        - $ref: "#/components/parameters/CRM-User-Role"
+        - $ref: "#/components/parameters/CRM-User-Name"
+      responses:
+        '200':
+          description: Сумма процентных платежей определена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanPaymentDto"
+components:
+  parameters:
+    CRM-User-Role:
+      name: CRM-User-Role
+      in: header
+      description: Роль пользователя
+      required: false
+      schema:
+        type: string
+    CRM-User-Name:
+      name: CRM-User-Name
+      in: header
+      description: Имя пользователя
+      required: false
+      schema:
+        type: string
+  schemas:
+    ClientSearchDto:
+      $ref: "./common-dto.yml#/components/schemas/ClientSearchDto"
+    ClientIdDto:
+      $ref: "./common-dto.yml#/components/schemas/ClientIdDto"
+    ClientDto:
+      $ref: "./common-dto.yml#/components/schemas/ClientDto"
+    ContactDto:
+      $ref: "./common-dto.yml#/components/schemas/ContactDto"
+    AccountNumberDto:
+      $ref: "./common-dto.yml#/components/schemas/AccountNumberDto"
+    CurrentBalanceDto:
+      $ref: "./common-dto.yml#/components/schemas/CurrentBalanceDto"
+    AccountDto:
+      $ref: "./common-dto.yml#/components/schemas/AccountDto"
+    OperationSearchDto:
+      $ref: "./common-dto.yml#/components/schemas/OperationSearchDto"
+    OperationDto:
+      $ref: "./common-dto.yml#/components/schemas/OperationDto"
+    ClientLevelDto:
+      $ref: "./common-dto.yml#/components/schemas/ClientLevelDto"
+    LoanPaymentDto:
+      $ref: "./common-dto.yml#/components/schemas/LoanPaymentDto"
