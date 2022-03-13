@@ -13,3 +13,5 @@ target/
 **/build/
 !src/**/build/
 gradle/wrapper/
+
+gen/

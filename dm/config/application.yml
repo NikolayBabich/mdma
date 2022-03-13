@@ -1,0 +1,12 @@
+# Server configuration
+server:
+  port: 8081
+  servlet:
+    context-path: /dm
+    session.timeout: 30s
+
+# Components host configuration
+system.element:
+  dm:
+    host: localhost
+    port: 8081

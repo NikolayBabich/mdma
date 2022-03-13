@@ -1,0 +1,184 @@
+openapi: "3.0.0"
+info:
+  title: Транспортные объекты общие сервисов CRM-BH и DM
+  version: 1.0.0
+paths:
+  /dummy:
+    get:
+      responses:
+        '200':
+          description: Фиктивный
+components:
+  schemas:
+    ClientSearchDto:
+      type: object
+      description: Параметры поиска клиентов
+      properties:
+        id:
+          type: string
+        lastname:
+          type: string
+        firstname:
+          type: string
+        patronymic:
+          type: string
+        birthDate:
+          type: string
+        passport:
+          type: string
+        inn:
+          type: string
+    ClientIdDto:
+      type: object
+      description: Запрос по clientId
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ClientDto:
+      type: object
+      description: Клиент банка, Физ. лицо
+      required:
+        - id
+        - lastname
+        - firstname
+        - birthDate
+        - passportSeries
+        - passportNumber
+        - inn
+      properties:
+        id:
+          type: string
+        lastname:
+          type: string
+        firstname:
+          type: string
+        patronymic:
+          type: string
+        birthDate:
+          type: string
+        passportSeries:
+          type: string
+        passportNumber:
+          type: string
+        inn:
+          type: string
+        address:
+          type: string
+    ContactDto:
+      type: object
+      description: Контактные данные клиента
+      required:
+        - id
+        - clientId
+        - type
+        - value
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+        shortcut:
+          type: string
+    AccountNumberDto:
+      type: object
+      description: Запрос по accountNumber
+      required:
+        - accountNumber
+      properties:
+        accountNumber:
+          type: string
+    AccountDto:
+      type: object
+      description: Банковские счета клиента
+      required:
+        - number
+        - clientId
+        - type
+        - currency
+        - status
+        - openDate
+      properties:
+        number:
+          type: string
+        clientId:
+          type: string
+        type:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+        openDate:
+          type: string
+        closeDate:
+          type: string
+        deferment:
+          type: string
+        shortcut:
+          type: string
+    CurrentBalanceDto:
+      type: object
+      description: Значение текущего баланса счета
+      required:
+        - balanceAmount
+      properties:
+        balanceAmount:
+          type: string
+    OperationSearchDto:
+      type: object
+      description: Запрос операций по счету
+      required:
+        - accountNumber
+        - quantity
+      properties:
+        accountNumber:
+          type: string
+        quantity:
+          type: string
+    OperationDto:
+      type: object
+      description: Банковские операции по счету
+      required:
+        - type
+        - accountNumber
+        - operDate
+        - amount
+      properties:
+        type:
+          type: string
+        accountNumber:
+          type: string
+        operDate:
+          type: string
+        amount:
+          type: string
+        description:
+          type: string
+    ClientLevelDto:
+      type: object
+      description: Уровни клиентов
+      required:
+        - level
+        - accountNumber
+        - avgBalance
+      properties:
+        level:
+          type: string
+        accountNumber:
+          type: string
+        avgBalance:
+          type: string
+    LoanPaymentDto:
+      type: object
+      description: Начисленные платежи по кредиту
+      required:
+        - amount
+      properties:
+        amount:
+          type: string

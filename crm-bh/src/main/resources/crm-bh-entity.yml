@@ -1,0 +1,32 @@
+openapi: "3.0.0"
+info:
+  title: Сущности приложения CRM-BH
+  version: 1.0.0
+paths:
+  /dummy:
+    get:
+      responses:
+        '200':
+          description: Фиктивный
+components:
+  schemas:
+    Role:
+      type: string
+      enum:
+        - MANAGER
+        - SUPERVISOR
+        - AUDITOR
+    User:
+      type: object
+      description: Пользователь системы
+      required:
+        - username
+        - password
+        - role
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          type: Role

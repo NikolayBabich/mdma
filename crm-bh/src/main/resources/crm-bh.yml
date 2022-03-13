@@ -1,0 +1,151 @@
+openapi: "3.0.0"
+info:
+  title: CRM Business Hub Application
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+security:
+  - basicAuth: []
+paths:
+  /client/find:
+    post:
+      summary: Поиск клиентов
+      operationId: findClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientSearchDto'
+        required: true
+      responses:
+        '200':
+          description: Поиск клиентов выполнен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientDto'
+  /client:
+    post:
+      summary: Получение информации о клиенте
+      operationId: getClient
+      requestBody:
+        description: clientId
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientIdDto'
+        required: true
+      responses:
+        '200':
+          description: Информации о клиенте найдена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientDto"
+        '400':
+          description: Клиент не найден
+  /client/account/last-operations:
+    post:
+      summary: Получение информации о последних операциях
+      operationId: getLastOperations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountNumberDto'
+        required: true
+      responses:
+        '200':
+          description: Информации о последних операциях найдена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperationDto'
+                #ref: "#/components/schemas/OperationsDto"
+  /client/contact/save:
+    post:
+      summary: Сохранение контакта клиента
+      operationId: saveContact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactDto'
+        required: true
+      responses:
+        '200':
+          description: Контакт клиента сохранен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactDto"
+        '400':
+          description: Клиент не найден
+  /client/level:
+    post:
+      summary: Получение уровня клиента
+      operationId: getClientLevel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientIdDto'
+        required: true
+      responses:
+        '200':
+          description: Уровень клиента определен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientLevelDto"
+        '400':
+          description: Клиент не найден
+  /client/account/loan-payment:
+    post:
+      summary: Получение суммы процентных платежей по счету Овердрафт
+      operationId: getLoanPayment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountNumberDto'
+        required: true
+      responses:
+        '200':
+          description: Сумма процентных платежей определена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanPaymentDto"
+components:
+  schemas:
+    ClientSearchDto:
+      $ref: "./common-dto.yml#/components/schemas/ClientSearchDto"
+    ClientIdDto:
+      $ref: "./common-dto.yml#/components/schemas/ClientIdDto"
+    ClientDto:
+      $ref: "./crm-bh-dto.yml#/components/schemas/ClientDto"
+    ContactDto:
+      $ref: "./common-dto.yml#/components/schemas/ContactDto"
+    AccountNumberDto:
+      $ref: "./common-dto.yml#/components/schemas/AccountNumberDto"
+    CurrentBalanceDto:
+      $ref: "./common-dto.yml#/components/schemas/CurrentBalanceDto"
+    AccountDto:
+      $ref: "./crm-bh-dto.yml#/components/schemas/AccountDto"
+    OperationSearchDto:
+      $ref: "./common-dto.yml#/components/schemas/OperationSearchDto"
+    OperationDto:
+      $ref: "./common-dto.yml#/components/schemas/OperationDto"
+    ClientLevelDto:
+      $ref: "./common-dto.yml#/components/schemas/ClientLevelDto"
+    LoanPaymentDto:
+      $ref: "./common-dto.yml#/components/schemas/LoanPaymentDto"
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

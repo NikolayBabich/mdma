@@ -1,0 +1,171 @@
+openapi: "3.0.0"
+info:
+  title: Сущности приложения DM
+  version: 1.0.0
+paths:
+  /dummy:
+    get:
+      responses:
+        '200':
+          description: Фиктивный
+components:
+  schemas:
+    Client:
+      type: object
+      description: Клиент банка, Физ. лицо
+      required:
+        - id
+        - lastname
+        - firstname
+        - birthDate
+        - passportSeries
+        - passportNumber
+        - inn
+      properties:
+        id:
+          type: string
+        lastname:
+          type: string
+        firstname:
+          type: string
+        patronymic:
+          type: string
+        birthDate:
+          type: integer
+          format: int64
+        passportSeries:
+          type: string
+        passportNumber:
+          type: string
+        inn:
+          type: string
+        address:
+          type: string
+    Contact:
+      type: object
+      description: Контактные данные клиента
+      required:
+        - id
+        - clientId
+        - type
+        - value
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        type:
+          type: string
+          enum:
+            - PHONE
+            - EMAIL
+        value:
+          type: string
+    Account:
+      type: object
+      description: Банковские счета клиента
+      required:
+        - number
+        - clientId
+        - type
+        - currency
+        - status
+        - openDate
+      properties:
+        number:
+          type: string
+        clientId:
+          type: string
+        type:
+          type: string
+          enum:
+            - PAYMENT
+            - BUDGET
+            - TRANSIT
+            - OVERDRAFT
+        currency:
+          type: string
+          enum:
+            - RUR
+          default: RUR
+        status:
+          type: string
+          enum:
+            - INACTIVE
+            - ACTIVE
+            - LOCKED
+            - CLOSED
+        openDate:
+          type: integer
+          format: int64
+        closeDate:
+          type: integer
+          format: int64
+        deferment:
+          type: integer
+          format: int32
+    Operation:
+      type: object
+      description: Банковские операции по счету
+      required:
+        - type
+        - accountNumber
+        - operDate
+        - amount
+      properties:
+        type:
+          type: string
+          enum:
+            - RECEIPT
+            - EXPENSE
+        accountNumber:
+          type: string
+        operDate:
+          type: integer
+          format: int64
+        amount:
+          type: number
+        description:
+          type: string
+    AccountBalance:
+      type: object
+      description: Подбитые балансы на счетах на начало месяца
+      required:
+        - accountNumber
+        - balanceDate
+        - amount
+      properties:
+        accountNumber:
+          type: string
+        balanceDate:
+          type: integer
+          format: int64
+        amount:
+          type: number
+    Access:
+      type: object
+      description: Права доступа к полям сущностей
+      required:
+        - role
+        - entity
+        - property
+      properties:
+        role:
+          type: string
+        entity:
+          type: string
+        property:
+          type: string
+    ClientLevel:
+      type: string
+      description: Уровни клиентов Банка
+      enum:
+        - LOW
+        - MIDDLE
+        - SILVER
+        - GOLD
+      x-enum-varnames:
+        - Low
+        - Middle
+        - Silver
+        - Gold
