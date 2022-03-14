@@ -16,6 +16,13 @@
   </parent>
 
   <dependencies>
+    <!-- Common -->
+    <dependency>
+      <groupId>ru.filit.mdma</groupId>
+      <artifactId>common</artifactId>
+      <version>1.0</version>
+    </dependency>
+
     <!-- Spring Boot -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -49,8 +56,8 @@
               <generatorName>spring</generatorName>
               <generateApis>true</generateApis>
               <generateModels>true</generateModels>
-              <apiPackage>ru.filit.mdma.crm.web.controller</apiPackage>
-              <modelPackage>ru.filit.mdma.crm.web.dto</modelPackage>
+              <apiPackage>ru.filit.mdma.gen.crm.web.controller</apiPackage>
+              <modelPackage>ru.filit.mdma.gen.crm.web.dto</modelPackage>
             </configuration>
           </execution>
           <execution>
@@ -64,7 +71,7 @@
               </inputSpec>
               <generatorName>spring</generatorName>
               <generateModels>true</generateModels>
-              <modelPackage>ru.filit.mdma.crm.model</modelPackage>
+              <modelPackage>ru.filit.mdma.gen.crm.model</modelPackage>
             </configuration>
           </execution>
         </executions>
