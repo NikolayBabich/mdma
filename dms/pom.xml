@@ -4,19 +4,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>dm</artifactId>
+  <artifactId>dms</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
-  <name>Data Manager</name>
+  <name>Data Masking System</name>
 
   <parent>
     <groupId>ru.filit.mdma</groupId>
     <artifactId>root</artifactId>
     <version>1.0</version>
   </parent>
-
-  <dependencies>
-  </dependencies>
 
   <build>
     <plugins>
@@ -25,33 +22,19 @@
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>dm-oas</id>
+            <id>dms-oas</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
               <inputSpec>
-                ${project.basedir}/src/main/resources/dm.yml
+                ${project.basedir}/src/main/resources/dms.yml
               </inputSpec>
               <generatorName>spring</generatorName>
               <generateApis>true</generateApis>
               <generateModels>true</generateModels>
-              <apiPackage>ru.filit.mdma.dm.web.controller</apiPackage>
-              <modelPackage>ru.filit.mdma.dm.web.dto</modelPackage>
-            </configuration>
-          </execution>
-          <execution>
-            <id>dm-entity-oas</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>
-                ${project.basedir}/src/main/resources/dm-entity.yml
-              </inputSpec>
-              <generatorName>spring</generatorName>
-              <generateModels>true</generateModels>
-              <modelPackage>ru.filit.mdma.dm.model</modelPackage>
+              <apiPackage>ru.filit.mdma.dms.web.controller</apiPackage>
+              <modelPackage>ru.filit.mdma.dms.web.dto</modelPackage>
             </configuration>
           </execution>
         </executions>
