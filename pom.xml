@@ -32,6 +32,10 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <guava.version>31.1-jre</guava.version>
+    <commons.lang3.version>3.12.0</commons.lang3.version>
+    <commons.beanutils.version>1.9.4</commons.beanutils.version>
+    <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+    <jackson.yaml.version>2.13.2</jackson.yaml.version>
     <puppycrawl.tools.version>10.0</puppycrawl.tools.version>
 
     <jackson.nullable.version>0.2.2</jackson.nullable.version>
@@ -50,6 +54,20 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- MapStruct -->
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${org.mapstruct.version}</version>
+    </dependency>
+
+    <!-- Jackson YAML -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson.yaml.version}</version>
     </dependency>
 
     <!-- Guava -->
@@ -127,6 +145,23 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${org.mapstruct.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${checkstyle.plugin.version}</version>
         <dependencies>
@@ -157,6 +192,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
     </plugins>
   </build>
 

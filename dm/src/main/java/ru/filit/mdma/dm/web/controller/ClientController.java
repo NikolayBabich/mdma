@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.filit.mdma.dm.service.AccountService;
+import ru.filit.mdma.dm.service.BalanceService;
+import ru.filit.mdma.dm.service.ClientService;
+import ru.filit.mdma.dm.service.ContactService;
+import ru.filit.mdma.dm.service.OperationService;
+import ru.filit.mdma.dm.util.Utils;
 import ru.filit.mdma.dm.web.dto.AccountDto;
 import ru.filit.mdma.dm.web.dto.AccountNumberDto;
 import ru.filit.mdma.dm.web.dto.ClientDto;
@@ -31,6 +37,26 @@ import ru.filit.mdma.dm.web.dto.OperationSearchDto;
 )
 public class ClientController implements ClientApi {
 
+  private final ClientService clientService;
+  private final ContactService contactService;
+  private final AccountService accountService;
+  private final BalanceService balanceService;
+  private final OperationService operationService;
+
+  public ClientController(
+      ClientService clientService,
+      ContactService contactService,
+      AccountService accountService,
+      BalanceService balanceService,
+      OperationService operationService
+  ) {
+    this.clientService = clientService;
+    this.contactService = contactService;
+    this.accountService = accountService;
+    this.balanceService = balanceService;
+    this.operationService = operationService;
+  }
+
   /**
    * Запрос клиентов.
    *
@@ -40,7 +66,11 @@ public class ClientController implements ClientApi {
   @PostMapping
   public ResponseEntity<List<ClientDto>> getClient(
       @Valid @RequestBody ClientSearchDto clientSearchDto) {
-    return null;
+    if (!Utils.hasNonNullProperty(clientSearchDto)) {
+      throw new IllegalArgumentException("clientSearchDto has no non-null property");
+    }
+    List<ClientDto> clients = clientService.findClients(clientSearchDto);
+    return ResponseEntity.ok(clients);
   }
 
   /**
@@ -51,7 +81,8 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/contact")
   public ResponseEntity<List<ContactDto>> getContact(@Valid @RequestBody ClientIdDto clientIdDto) {
-    return null;
+    List<ContactDto> contacts = contactService.findContacts(clientIdDto);
+    return ResponseEntity.ok(contacts);
   }
 
   /**
@@ -62,7 +93,8 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/account")
   public ResponseEntity<List<AccountDto>> getAccount(@Valid @RequestBody ClientIdDto clientIdDto) {
-    return null;
+    List<AccountDto> accounts = accountService.findAccounts(clientIdDto);
+    return ResponseEntity.ok(accounts);
   }
 
   /**
@@ -74,7 +106,8 @@ public class ClientController implements ClientApi {
   @PostMapping("/account/balance")
   public ResponseEntity<CurrentBalanceDto> getAccountBalance(
       @Valid @RequestBody AccountNumberDto accountNumberDto) {
-    return null;
+    CurrentBalanceDto balance = balanceService.getBalance(accountNumberDto);
+    return ResponseEntity.ok(balance);
   }
 
   /**
@@ -86,7 +119,8 @@ public class ClientController implements ClientApi {
   @PostMapping("/account/operation")
   public ResponseEntity<List<OperationDto>> getAccountOperations(
       @Valid @RequestBody OperationSearchDto operationSearchDto) {
-    return null;
+    List<OperationDto> operations = operationService.findOperations(operationSearchDto);
+    return ResponseEntity.ok(operations);
   }
 
   /**
