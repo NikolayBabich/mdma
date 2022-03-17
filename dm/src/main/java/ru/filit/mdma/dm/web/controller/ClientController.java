@@ -131,7 +131,8 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/contact/save")
   public ResponseEntity<ContactDto> saveContact(@Valid @RequestBody ContactDto contactDto) {
-    return null;
+    ContactDto savedContact = contactService.saveContact(contactDto);
+    return ResponseEntity.ok(savedContact);
   }
 
   /**
@@ -143,7 +144,8 @@ public class ClientController implements ClientApi {
   @PostMapping("/level")
   public ResponseEntity<ClientLevelDto> getClientLevel(
       @Valid @RequestBody ClientIdDto clientIdDto) {
-    return null;
+    ClientLevelDto level = clientService.getLevel(clientIdDto);
+    return ResponseEntity.ok(level);
   }
 
   /**
@@ -155,7 +157,8 @@ public class ClientController implements ClientApi {
   @PostMapping("/account/loan-payment")
   public ResponseEntity<LoanPaymentDto> getLoanPayment(
       @Valid @RequestBody AccountNumberDto accountNumberDto) {
-    return null;
+    LoanPaymentDto loanPayment = accountService.getLoanPayment(accountNumberDto);
+    return ResponseEntity.ok(loanPayment);
   }
 
 }

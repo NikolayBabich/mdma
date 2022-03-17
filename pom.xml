@@ -34,6 +34,7 @@
     <guava.version>31.1-jre</guava.version>
     <commons.lang3.version>3.12.0</commons.lang3.version>
     <commons.beanutils.version>1.9.4</commons.beanutils.version>
+    <commons.io.version>2.11.0</commons.io.version>
     <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
     <jackson.yaml.version>2.13.2</jackson.yaml.version>
     <puppycrawl.tools.version>10.0</puppycrawl.tools.version>
@@ -159,7 +160,6 @@
         </configuration>
       </plugin>
 
-      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -192,7 +192,6 @@
           </execution>
         </executions>
       </plugin>
-      -->
     </plugins>
   </build>
 
