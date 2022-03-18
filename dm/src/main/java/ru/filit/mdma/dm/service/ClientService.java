@@ -61,7 +61,7 @@ public class ClientService {
         .map(account -> new ClientLevelHelper(
             account.getNumber(),
             accountService.getAverageBalance(
-                account, DateTimeUtil.getTimestampOfLastDays(DAYS_FOR_AVG_BALANCE)
+                account, DateTimeUtil.getEndsOfLastDays(DAYS_FOR_AVG_BALANCE)
             ))
         )
         .max(Comparator.comparing(ClientLevelHelper::getAvgBalance))

@@ -1,17 +1,21 @@
 package ru.filit.mdma.dm.util;
 
+import static java.time.DayOfWeek.SATURDAY;
+import static java.time.DayOfWeek.SUNDAY;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 public final class DateTimeUtil {
 
-  private static final long MILLIS_IN_SECOND = 1_000L;
   private static final long SECONDS_IN_DAY = 60 * 60 * 24;
   public static final int MAX_HOUR = 23;
   public static final int MAX_MINUTE = 59;
@@ -59,12 +63,22 @@ public final class DateTimeUtil {
     return beginOfMonth.toEpochSecond(ZoneOffset.UTC);
   }
 
-  public static List<Long> getTimestampOfLastDays(int daysLimit) {
+  public static List<Long> getEndsOfLastDays(int daysLimit) {
     long endOfCurrentDay = getEndOfCurrentDay();
     return LongStream.iterate(0, n -> n + SECONDS_IN_DAY)
         .limit(daysLimit)
         .map(n -> endOfCurrentDay - n)
         .boxed()
+        .collect(Collectors.toList());
+  }
+
+  public static List<Long> getEndsOfLastWorkdays(int daysLimit) {
+    LocalDate currentDate = getCurrentDate();
+    Stream<LocalDate> lastDates = currentDate.minusDays(daysLimit).datesUntil(currentDate);
+    return Stream.concat(lastDates, Stream.of(currentDate))
+        .filter(date -> date.getDayOfWeek() != SATURDAY && date.getDayOfWeek() != SUNDAY)
+        .map(DateTimeUtil::getEndOfDay)
+        .sorted(Comparator.reverseOrder())
         .collect(Collectors.toList());
   }
 
@@ -77,7 +91,7 @@ public final class DateTimeUtil {
   }
 
   private static LocalDate getCurrentDate() {
-    return LocalDate.of(2022, 1, 1);
+    return LocalDate.of(2021, 12, 31);
   }
 
 }
