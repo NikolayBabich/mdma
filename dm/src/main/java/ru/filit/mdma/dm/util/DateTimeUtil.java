@@ -77,8 +77,7 @@ public final class DateTimeUtil {
   }
 
   private static LocalDate getCurrentDate() {
-    return LocalDate.now();
-    //return LocalDate.of(2021, 12, 13);
+    return LocalDate.of(2022, 1, 1);
   }
 
 }

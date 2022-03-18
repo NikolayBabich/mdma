@@ -46,8 +46,8 @@ public class AccountService {
     return BigDecimal.valueOf(averageInPennies / 100.0).setScale(2, RoundingMode.HALF_UP);
   }
 
-  private long getBalanceInPennies(Account account, Long endOfDay) {
-    BigDecimal balanceInPennies = balanceService.getBalance(account.getNumber(), endOfDay)
+  private long getBalanceInPennies(Account account, Long timestamp) {
+    BigDecimal balanceInPennies = balanceService.getBalance(account.getNumber(), timestamp)
         .multiply(BigDecimal.valueOf(100));
     return balanceInPennies.longValue();
   }

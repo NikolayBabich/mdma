@@ -27,9 +27,9 @@ public class OperationService {
         operationSearchDto.getAccountNumber(), 0L, DateTimeUtil.getEndOfCurrentDay());
 
     return operations.stream()
+        .limit(Long.parseLong(operationSearchDto.getQuantity()))
         .map(mapper::toDto)
         .sorted(Comparator.comparing(OperationDto::getOperDate).reversed())
-        .limit(Long.parseLong(operationSearchDto.getQuantity()))
         .collect(Collectors.toList());
   }
 

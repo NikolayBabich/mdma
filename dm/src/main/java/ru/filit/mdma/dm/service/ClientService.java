@@ -52,7 +52,7 @@ public class ClientService {
   public ClientLevelDto getLevel(ClientIdDto clientIdDto) {
     String clientId = clientIdDto.getId();
     if (clientRepository.getById(clientId).isEmpty()) {
-      throw new NotFoundException("Not found Client id:" + clientId);
+      throw new NotFoundException("No Client id:" + clientId);
     }
 
     ClientLevelHelper helper = accountService.findAccounts(clientIdDto).stream()
@@ -75,6 +75,10 @@ public class ClientService {
 
   private static class ClientLevelHelper {
 
+    private static final BigDecimal MIDDLE_LEVEL_LIMIT = BigDecimal.valueOf(30_000);
+    private static final BigDecimal SILVER_LEVEL_LIMIT = BigDecimal.valueOf(300_000);
+    private static final BigDecimal GOLD_LEVEL_LIMIT = BigDecimal.valueOf(1_000_000);
+
     private final String accountNumber;
     private final BigDecimal avgBalance;
     private final ClientLevel level;
@@ -93,16 +97,16 @@ public class ClientService {
       return avgBalance;
     }
 
-    public ClientLevel getLevel() {
+    private ClientLevel getLevel() {
       return level;
     }
 
     private ClientLevel computeLevel(BigDecimal avgBalance) {
-      if (avgBalance.compareTo(BigDecimal.valueOf(30_000)) < 0) {
+      if (avgBalance.compareTo(MIDDLE_LEVEL_LIMIT) < 0) {
         return ClientLevel.Low;
-      } else if (avgBalance.compareTo(BigDecimal.valueOf(300_000)) < 0) {
+      } else if (avgBalance.compareTo(SILVER_LEVEL_LIMIT) < 0) {
         return ClientLevel.Middle;
-      } else if (avgBalance.compareTo(BigDecimal.valueOf(1_000_000)) < 0) {
+      } else if (avgBalance.compareTo(GOLD_LEVEL_LIMIT) < 0) {
         return ClientLevel.Silver;
       } else {
         return ClientLevel.Gold;

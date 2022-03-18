@@ -3,6 +3,7 @@ package ru.filit.mdma.dm.service;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.stereotype.Service;
 import ru.filit.mdma.dm.exception.NotFoundException;
@@ -16,68 +17,69 @@ import ru.filit.mdma.dm.web.dto.ContactDto;
 @Service
 public class ContactService {
 
-  private final ContactRepository repository;
-  private final ClientRepository clientRepository;
-  private final ContactMapper mapper;
+  private static final int ID_LOWER_BOUND = 10_000;
+  private static final int ID_UPPER_BOUND = 100_000;
 
-  public ContactService(ContactRepository repository,
-      ClientRepository clientRepository, ContactMapper mapper) {
-    this.repository = repository;
+  private final ContactRepository contactRepository;
+  private final ContactMapper contactMapper;
+  private final ClientRepository clientRepository;
+
+  public ContactService(
+      ContactRepository contactRepository,
+      ContactMapper contactMapper,
+      ClientRepository clientRepository
+  ) {
+    this.contactRepository = contactRepository;
+    this.contactMapper = contactMapper;
     this.clientRepository = clientRepository;
-    this.mapper = mapper;
   }
 
   public List<ContactDto> findContacts(ClientIdDto clientIdDto) {
     String clientId = clientIdDto.getId();
-    return repository.getAll().stream()
+    return contactRepository.getAll().stream()
         .filter(contact -> clientId.equals(contact.getClientId()))
-        .map(mapper::toDto)
+        .map(contactMapper::toDto)
         .collect(Collectors.toList());
   }
 
   public ContactDto saveContact(ContactDto contactDto) {
     String clientId = contactDto.getClientId();
     if (clientRepository.getById(clientId).isEmpty()) {
-      throw new NotFoundException("Not found Client id=" + clientId);
+      throw new NotFoundException("No Client id:" + clientId);
     }
 
-    Contact newContact = mapper.fromDto(contactDto);
-    ContactDto retVal = null;
-
-    List<Contact> allContacts = repository.getAll();
+    Contact newContact = contactMapper.fromDto(contactDto);
+    ContactDto retVal;
+    List<Contact> allContacts = contactRepository.getAll();
     String contactId = contactDto.getId();
     if (contactId == null) {
       Set<Integer> contactIds = allContacts.stream()
           .map(contact -> Integer.parseInt(contact.getId()))
           .collect(Collectors.toSet());
-      newContact.setId(generateNotExistingId(contactIds));
+      newContact.id(generateNotExistingId(contactIds));
       allContacts.add(newContact);
-      retVal = mapper.toDto(newContact);
+      retVal = contactMapper.toDto(newContact);
     } else {
-      boolean notFound = true;
-      for (Contact contact : allContacts) {
-        if (clientId.equals(contact.getClientId()) && contactId.equals(contact.getId())) {
-          notFound = false;
-          contact.setType(newContact.getType());
-          contact.setValue(newContact.getValue());
-          retVal = mapper.toDto(contact);
-          break;
-        }
-      }
-      if (notFound) {
-        throw new NotFoundException("No Contact id:" + contactId + " for Client id:" + clientId);
-      }
+      Contact existedContact = allContacts.stream()
+          .filter(contact -> clientId.equals(contact.getClientId())
+              && contactId.equals(contact.getId()))
+          .findAny()
+          .orElseThrow(() -> new NotFoundException(
+              "No Contact id:" + contactId + " for Client id:" + clientId));
+      retVal = contactMapper.toDto(
+          existedContact.type(newContact.getType()).value(newContact.getValue()));
     }
-    repository.saveAll(allContacts);
+    contactRepository.saveAll(allContacts);
     return retVal;
   }
 
   private String generateNotExistingId(Set<Integer> ids) {
-    int randomId;
-    do {
-      randomId = RandomUtils.nextInt(10_000, 100_000);
-    } while (ids.contains(randomId));
-    return String.valueOf(randomId);
+    return IntStream.generate(() -> RandomUtils.nextInt(ID_LOWER_BOUND, ID_UPPER_BOUND))
+        .filter(id -> !ids.contains(id))
+        .mapToObj(String::valueOf)
+        .findFirst()
+        // shouldn't get here
+        .orElse(null);
   }
 
 }

@@ -2,12 +2,8 @@ package ru.filit.mdma.dm.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import ru.filit.mdma.dm.model.AccountBalance;
-import ru.filit.mdma.dm.model.Operation;
 import ru.filit.mdma.dm.model.Operation.TypeEnum;
 import ru.filit.mdma.dm.repository.BalanceRepository;
 import ru.filit.mdma.dm.util.DateTimeUtil;
@@ -34,25 +30,23 @@ public class BalanceService {
     return new CurrentBalanceDto().balanceAmount(balance.toString());
   }
 
-  public BigDecimal getBalance(String accountNumber, Long targetTimestamp) {
-    Optional<AccountBalance> latestBalance = balanceRepository.getAll().stream()
+  public BigDecimal getBalance(String accountNumber, Long targetDate) {
+    Long beginOfMonth = DateTimeUtil.getBeginOfMonth(targetDate);
+
+    BigDecimal latestBalanceAmount = balanceRepository.getAll().stream()
         .filter(balance -> accountNumber.equals(balance.getAccountNumber())
-            && balance.getBalanceDate() < targetTimestamp)
-        .max(Comparator.comparing(AccountBalance::getBalanceDate));
+            && beginOfMonth.equals(balance.getBalanceDate()))
+        .findAny()
+        .map(AccountBalance::getAmount)
+        .orElse(BigDecimal.ZERO);
 
-    BigDecimal latestAmount = latestBalance.isPresent()
-        ? latestBalance.get().getAmount() : BigDecimal.ZERO;
-    Long latestBalanceDate = latestBalance.isPresent()
-        ? latestBalance.get().getBalanceDate() : DateTimeUtil.getBeginOfMonth(targetTimestamp);
+    BigDecimal operationSum =
+        operationService.getOperationsBetween(accountNumber, beginOfMonth, targetDate).stream()
+            .map(operation -> operation.getType() == TypeEnum.EXPENSE
+                ? operation.getAmount().negate() : operation.getAmount())
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    List<Operation> operations =
-        operationService.getOperationsBetween(accountNumber, latestBalanceDate, targetTimestamp);
-    BigDecimal operationSum = operations.stream()
-        .map(operation -> operation.getType() == TypeEnum.EXPENSE
-            ? operation.getAmount().negate() : operation.getAmount())
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    return latestAmount.add(operationSum).setScale(2, RoundingMode.HALF_UP);
+    return latestBalanceAmount.add(operationSum).setScale(2, RoundingMode.HALF_UP);
   }
 
 }
