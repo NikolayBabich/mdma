@@ -2,12 +2,14 @@ package ru.filit.mdma.dm.web.controller;
 
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import ru.filit.mdma.dm.service.AccountService;
 import ru.filit.mdma.dm.service.BalanceService;
 import ru.filit.mdma.dm.service.ClientService;
@@ -67,7 +69,8 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<ClientDto>> getClient(
       @Valid @RequestBody ClientSearchDto clientSearchDto) {
     if (!Utils.hasNonNullProperty(clientSearchDto)) {
-      throw new IllegalArgumentException("clientSearchDto has no non-null property");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Validation failed for object='clientIdDto': zero non-null property");
     }
     List<ClientDto> clients = clientService.findClients(clientSearchDto);
     return ResponseEntity.ok(clients);

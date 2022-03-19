@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.filit.mdma.crm.service.ClientService;
 import ru.filit.mdma.crm.web.dto.AccountNumberDto;
 import ru.filit.mdma.crm.web.dto.ClientDto;
 import ru.filit.mdma.crm.web.dto.ClientIdDto;
@@ -29,6 +30,12 @@ import ru.filit.mdma.crm.web.dto.OperationDto;
 )
 public class ClientController implements ClientApi {
 
+  private final ClientService clientService;
+
+  public ClientController(ClientService clientService) {
+    this.clientService = clientService;
+  }
+
   /**
    * Поиск клиентов.
    *
@@ -38,7 +45,7 @@ public class ClientController implements ClientApi {
   @PostMapping("/find")
   public ResponseEntity<List<ClientDto>> findClient(
       @Valid @RequestBody ClientSearchDto clientSearchDto) {
-    return null;
+    return ResponseEntity.ok(clientService.findClients(clientSearchDto));
   }
 
   /**
@@ -49,7 +56,7 @@ public class ClientController implements ClientApi {
    */
   @PostMapping
   public ResponseEntity<ClientDto> getClient(@Valid @RequestBody ClientIdDto clientIdDto) {
-    return null;
+    return ResponseEntity.ok(clientService.getClient(clientIdDto));
   }
 
   /**
@@ -61,7 +68,7 @@ public class ClientController implements ClientApi {
   @PostMapping("/account/last-operations")
   public ResponseEntity<List<OperationDto>> getLastOperations(
       @Valid @RequestBody AccountNumberDto accountNumberDto) {
-    return null;
+    return ResponseEntity.ok(clientService.getLastOperations(accountNumberDto));
   }
 
   /**
@@ -72,7 +79,7 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/contact/save")
   public ResponseEntity<ContactDto> saveContact(@Valid @RequestBody ContactDto contactDto) {
-    return null;
+    return ResponseEntity.ok(clientService.saveContact(contactDto));
   }
 
   /**
@@ -84,7 +91,7 @@ public class ClientController implements ClientApi {
   @PostMapping("/level")
   public ResponseEntity<ClientLevelDto> getClientLevel(
       @Valid @RequestBody ClientIdDto clientIdDto) {
-    return null;
+    return ResponseEntity.ok(clientService.getClientLevel(clientIdDto));
   }
 
   /**
@@ -96,7 +103,7 @@ public class ClientController implements ClientApi {
   @PostMapping("/account/loan-payment")
   public ResponseEntity<LoanPaymentDto> getLoanPayment(
       @Valid @RequestBody AccountNumberDto accountNumberDto) {
-    return null;
+    return ResponseEntity.ok(clientService.getLoanPayment(accountNumberDto));
   }
 
 }
