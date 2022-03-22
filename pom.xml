@@ -37,6 +37,7 @@
     <commons.io.version>2.11.0</commons.io.version>
     <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
     <jackson.yaml.version>2.13.2</jackson.yaml.version>
+    <org.json.version>20220320</org.json.version>
     <puppycrawl.tools.version>10.0</puppycrawl.tools.version>
 
     <jackson.nullable.version>0.2.2</jackson.nullable.version>
@@ -83,6 +84,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- OpenApi -->

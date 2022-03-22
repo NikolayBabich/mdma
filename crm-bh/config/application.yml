@@ -12,7 +12,3 @@ system.element:
   dm:
     host: localhost
     port: 8081
-
-spring:
-  jackson:
-    default-property-inclusion: non_null
