@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public final class DateTimeUtil {
@@ -63,20 +62,12 @@ public final class DateTimeUtil {
     return beginOfMonth.toEpochSecond(ZoneOffset.UTC);
   }
 
-  public static List<Long> getEndsOfLastDays(int daysLimit) {
-    long endOfCurrentDay = getEndOfCurrentDay();
-    return LongStream.iterate(0, n -> n + SECONDS_IN_DAY)
-        .limit(daysLimit)
-        .map(n -> endOfCurrentDay - n)
-        .boxed()
-        .collect(Collectors.toList());
-  }
-
-  public static List<Long> getEndsOfLastWorkdays(int daysLimit) {
+  public static List<Long> getEndsOfLastDays(int daysLimit, boolean keepHolidays) {
     LocalDate currentDate = getCurrentDate();
     Stream<LocalDate> lastDates = currentDate.minusDays(daysLimit).datesUntil(currentDate);
     return Stream.concat(lastDates, Stream.of(currentDate))
-        .filter(date -> date.getDayOfWeek() != SATURDAY && date.getDayOfWeek() != SUNDAY)
+        .filter(date -> keepHolidays
+            || date.getDayOfWeek() != SATURDAY && date.getDayOfWeek() != SUNDAY)
         .map(DateTimeUtil::getEndOfDay)
         .sorted(Comparator.reverseOrder())
         .collect(Collectors.toList());

@@ -68,7 +68,7 @@ public class AccountService {
     }
 
     List<BigDecimal> negativeBalances =
-        DateTimeUtil.getEndsOfLastWorkdays(DAYS_IN_HALF_YEAR).stream()
+        DateTimeUtil.getEndsOfLastDays(DAYS_IN_HALF_YEAR, false).stream()
             .map(timestamp -> balanceService.getBalance(accountNumber, timestamp))
             .takeWhile(balance -> balance.compareTo(BigDecimal.ZERO) < 0)
             .collect(Collectors.toList());
