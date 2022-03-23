@@ -1,8 +1,7 @@
 package ru.filit.mdma.dm.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import ru.filit.mdma.dm.model.Client;
 
@@ -11,7 +10,7 @@ public class ClientRepository extends AbstractYamlRepository<Client> {
 
   private static final String YAML_PATH = "datafiles/clients.yml";
 
-  public ClientRepository(@Qualifier("yamlObjectMapper") ObjectMapper yamlMapper) {
+  public ClientRepository(YAMLMapper yamlMapper) {
     super(yamlMapper, Client.class, YAML_PATH);
   }
 

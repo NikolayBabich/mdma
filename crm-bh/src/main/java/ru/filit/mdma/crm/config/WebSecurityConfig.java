@@ -31,7 +31,7 @@ public class WebSecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         .authorizeHttpRequests(authz -> authz
-            .antMatchers("/api/**").authenticated()
+            .antMatchers("/client/**").authenticated()
         )
         .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(entryPoint))
         .userDetailsService(userDetailsService)

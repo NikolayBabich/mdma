@@ -1,9 +1,8 @@
 package ru.filit.mdma.dm.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import ru.filit.mdma.dm.model.Contact;
 
@@ -12,7 +11,7 @@ public class ContactRepository extends AbstractYamlRepository<Contact> {
 
   private static final String YAML_PATH = "datafiles/contacts.yml";
 
-  public ContactRepository(@Qualifier("yamlObjectMapper") ObjectMapper yamlMapper) {
+  public ContactRepository(YAMLMapper yamlMapper) {
     super(yamlMapper, Contact.class, YAML_PATH);
   }
 

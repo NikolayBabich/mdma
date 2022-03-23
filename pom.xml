@@ -134,7 +134,7 @@
             <configOptions>
               <delegatePattern>false</delegatePattern>
               <interfaceOnly>true</interfaceOnly>
-              <java8>false</java8>
+              <skipDefaultInterface>true</skipDefaultInterface>
               <hideGenerationTimestamp>true</hideGenerationTimestamp>
               <useSwaggerAnnotations>false</useSwaggerAnnotations>
               <useBeanValidation>true</useBeanValidation>

@@ -1,10 +1,9 @@
 package ru.filit.mdma.crm.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import java.io.IOException;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
@@ -15,11 +14,11 @@ public class YamlUserRepository implements UserRepository {
 
   private static final String YAML_RESOURCE_PATH = "datafiles/users.yml";
 
-  private final ObjectMapper yamlMapper;
+  private final YAMLMapper yamlMapper;
   private final CollectionType collectionType;
   private final Resource yamlResource = new ClassPathResource(YAML_RESOURCE_PATH);
 
-  public YamlUserRepository(@Qualifier("yamlObjectMapper") ObjectMapper mapper) {
+  public YamlUserRepository(YAMLMapper mapper) {
     this.yamlMapper = mapper;
     this.collectionType =
         mapper.getTypeFactory().constructCollectionType(List.class, UserExtended.class);
