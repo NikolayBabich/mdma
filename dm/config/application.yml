@@ -1,14 +1,8 @@
 # Server configuration
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /dm
     session.timeout: 30s
   error:
     include-message: always
-
-# Components configuration
-system.element:
-  dm:
-    host: localhost
-    port: 8081

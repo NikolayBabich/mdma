@@ -4,6 +4,8 @@ server:
   servlet:
     context-path: /dm
     session.timeout: 30s
+  error:
+    include-message: always
 
 # Components configuration
 system.element:

@@ -83,7 +83,7 @@ public class ClientController implements ClientApi {
    * @return список контактов клиента
    */
   @PostMapping("/contact")
-  public ResponseEntity<List<ContactDto>> getContact(@Valid @RequestBody ClientIdDto clientIdDto) {
+  public ResponseEntity<List<ContactDto>> getContact(ClientIdDto clientIdDto) {
     List<ContactDto> contacts = contactService.findContacts(clientIdDto);
     return ResponseEntity.ok(contacts);
   }
@@ -95,7 +95,7 @@ public class ClientController implements ClientApi {
    * @return список счетов клиента
    */
   @PostMapping("/account")
-  public ResponseEntity<List<AccountDto>> getAccount(@Valid @RequestBody ClientIdDto clientIdDto) {
+  public ResponseEntity<List<AccountDto>> getAccount(ClientIdDto clientIdDto) {
     List<AccountDto> accounts = accountService.findAccounts(clientIdDto);
     return ResponseEntity.ok(accounts);
   }
@@ -107,8 +107,7 @@ public class ClientController implements ClientApi {
    * @return текущий баланс по счету
    */
   @PostMapping("/account/balance")
-  public ResponseEntity<CurrentBalanceDto> getAccountBalance(
-      @Valid @RequestBody AccountNumberDto accountNumberDto) {
+  public ResponseEntity<CurrentBalanceDto> getAccountBalance(AccountNumberDto accountNumberDto) {
     CurrentBalanceDto balance = balanceService.getBalance(accountNumberDto);
     return ResponseEntity.ok(balance);
   }
@@ -121,7 +120,7 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/account/operation")
   public ResponseEntity<List<OperationDto>> getAccountOperations(
-      @Valid @RequestBody OperationSearchDto operationSearchDto) {
+      OperationSearchDto operationSearchDto) {
     List<OperationDto> operations = operationService.findOperations(operationSearchDto);
     return ResponseEntity.ok(operations);
   }
@@ -133,7 +132,7 @@ public class ClientController implements ClientApi {
    * @return сохраненный контакт клиента
    */
   @PostMapping("/contact/save")
-  public ResponseEntity<ContactDto> saveContact(@Valid @RequestBody ContactDto contactDto) {
+  public ResponseEntity<ContactDto> saveContact(ContactDto contactDto) {
     ContactDto savedContact = contactService.saveContact(contactDto);
     return ResponseEntity.ok(savedContact);
   }
@@ -145,8 +144,7 @@ public class ClientController implements ClientApi {
    * @return уровень клиента
    */
   @PostMapping("/level")
-  public ResponseEntity<ClientLevelDto> getClientLevel(
-      @Valid @RequestBody ClientIdDto clientIdDto) {
+  public ResponseEntity<ClientLevelDto> getClientLevel(ClientIdDto clientIdDto) {
     ClientLevelDto level = clientService.getLevel(clientIdDto);
     return ResponseEntity.ok(level);
   }
@@ -158,8 +156,7 @@ public class ClientController implements ClientApi {
    * @return сумма начисленных платежей
    */
   @PostMapping("/account/loan-payment")
-  public ResponseEntity<LoanPaymentDto> getLoanPayment(
-      @Valid @RequestBody AccountNumberDto accountNumberDto) {
+  public ResponseEntity<LoanPaymentDto> getLoanPayment(AccountNumberDto accountNumberDto) {
     LoanPaymentDto loanPayment = accountService.getLoanPayment(accountNumberDto);
     return ResponseEntity.ok(loanPayment);
   }

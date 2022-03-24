@@ -26,13 +26,6 @@
       <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
 
-    <!-- JSON -->
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>${org.json.version}</version>
-    </dependency>
-
     <!-- Testing -->
     <dependency>
       <groupId>org.springframework.security</groupId>

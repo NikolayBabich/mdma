@@ -1,11 +1,12 @@
 package ru.filit.mdma.crm.web.controller;
 
 import java.util.List;
-import javax.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.filit.mdma.crm.service.ClientService;
@@ -30,6 +31,8 @@ import ru.filit.mdma.crm.web.dto.OperationDto;
 )
 public class ClientController implements ClientApi {
 
+  private static final String ROLE_PREFIX = "ROLE_";
+
   private final ClientService clientService;
 
   public ClientController(ClientService clientService) {
@@ -43,9 +46,9 @@ public class ClientController implements ClientApi {
    * @return список клиентов
    */
   @PostMapping("/find")
-  public ResponseEntity<List<ClientDto>> findClient(
-      @Valid @RequestBody ClientSearchDto clientSearchDto) {
-    return ResponseEntity.ok(clientService.findClients(clientSearchDto));
+  public ResponseEntity<List<ClientDto>> findClient(ClientSearchDto clientSearchDto) {
+    return ResponseEntity.ok(clientService.findClients(
+        clientSearchDto, getAuthUserRole(), getAuthUserName()));
   }
 
   /**
@@ -55,8 +58,9 @@ public class ClientController implements ClientApi {
    * @return информация о клиенте
    */
   @PostMapping
-  public ResponseEntity<ClientDto> getClient(@Valid @RequestBody ClientIdDto clientIdDto) {
-    return ResponseEntity.ok(clientService.getClient(clientIdDto));
+  public ResponseEntity<ClientDto> getClient(ClientIdDto clientIdDto) {
+    return ResponseEntity.ok(clientService.getClient(
+        clientIdDto, getAuthUserRole(), getAuthUserName()));
   }
 
   /**
@@ -66,9 +70,9 @@ public class ClientController implements ClientApi {
    * @return информация о последних операциях
    */
   @PostMapping("/account/last-operations")
-  public ResponseEntity<List<OperationDto>> getLastOperations(
-      @Valid @RequestBody AccountNumberDto accountNumberDto) {
-    return ResponseEntity.ok(clientService.getLastOperations(accountNumberDto));
+  public ResponseEntity<List<OperationDto>> getLastOperations(AccountNumberDto accountNumberDto) {
+    return ResponseEntity.ok(clientService.getLastOperations(
+        accountNumberDto, getAuthUserRole(), getAuthUserName()));
   }
 
   /**
@@ -78,8 +82,9 @@ public class ClientController implements ClientApi {
    * @return сохраненный контакт клиента
    */
   @PostMapping("/contact/save")
-  public ResponseEntity<ContactDto> saveContact(@Valid @RequestBody ContactDto contactDto) {
-    return ResponseEntity.ok(clientService.saveContact(contactDto));
+  public ResponseEntity<ContactDto> saveContact(ContactDto contactDto) {
+    return ResponseEntity.ok(clientService.saveContact(
+        contactDto, getAuthUserRole(), getAuthUserName()));
   }
 
   /**
@@ -89,9 +94,9 @@ public class ClientController implements ClientApi {
    * @return информация об уровне клиента
    */
   @PostMapping("/level")
-  public ResponseEntity<ClientLevelDto> getClientLevel(
-      @Valid @RequestBody ClientIdDto clientIdDto) {
-    return ResponseEntity.ok(clientService.getClientLevel(clientIdDto));
+  public ResponseEntity<ClientLevelDto> getClientLevel(ClientIdDto clientIdDto) {
+    return ResponseEntity.ok(clientService.getClientLevel(
+        clientIdDto, getAuthUserRole(), getAuthUserName()));
   }
 
   /**
@@ -101,9 +106,26 @@ public class ClientController implements ClientApi {
    * @return сумма начисленных платежей
    */
   @PostMapping("/account/loan-payment")
-  public ResponseEntity<LoanPaymentDto> getLoanPayment(
-      @Valid @RequestBody AccountNumberDto accountNumberDto) {
-    return ResponseEntity.ok(clientService.getLoanPayment(accountNumberDto));
+  public ResponseEntity<LoanPaymentDto> getLoanPayment(AccountNumberDto accountNumberDto) {
+    return ResponseEntity.ok(clientService.getLoanPayment(
+        accountNumberDto, getAuthUserRole(), getAuthUserName()));
+  }
+
+  private String getAuthUserRole() {
+    return getAuthentication().getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .filter(authority -> authority.startsWith(ROLE_PREFIX))
+        .findFirst()
+        .map(role -> role.replaceFirst(ROLE_PREFIX, ""))
+        .orElseThrow(() -> new IllegalStateException("Authenticated user has no role"));
+  }
+
+  private String getAuthUserName() {
+    return getAuthentication().getName();
+  }
+
+  private Authentication getAuthentication() {
+    return SecurityContextHolder.getContext().getAuthentication();
   }
 
 }

@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -38,13 +39,14 @@ public class ClientService {
     this.webClient = webClient;
   }
 
-  public List<ClientDto> findClients(ClientSearchDto clientSearchDto) {
-    return sendRequestForList("/", clientSearchDto, new ParameterizedTypeReference<>() {});
+  public List<ClientDto> findClients(ClientSearchDto clientSearchDto, String role, String name) {
+    return sendRequestForList("/", clientSearchDto,
+        new ParameterizedTypeReference<>() {}, role, name);
   }
 
-  public ClientDto getClient(ClientIdDto clientIdDto) {
+  public ClientDto getClient(ClientIdDto clientIdDto, String role, String name) {
     String clientId = clientIdDto.getId();
-    List<ClientDto> clients = findClients(new ClientSearchDto().id(clientId));
+    List<ClientDto> clients = findClients(new ClientSearchDto().id(clientId), role, name);
 
     if (clients.isEmpty()) {
       throw new ResponseStatusException(BAD_REQUEST, "No Client id:" + clientId);
@@ -54,14 +56,17 @@ public class ClientService {
     ClientDto client = clients.get(0);
 
     List<ContactDto> contacts = sendRequestForList("/contact", clientIdDto,
-        new ParameterizedTypeReference<>() {});
+        new ParameterizedTypeReference<>() {}, role, name);
     contacts.forEach(client::addContactsItem);
     List<AccountDto> accounts = sendRequestForList("/account", clientIdDto,
-        new ParameterizedTypeReference<>() {});
+        new ParameterizedTypeReference<>() {}, role, name);
     accounts.forEach(client::addAccountsItem);
 
-    accounts.forEach(account -> account.balanceAmount(sendRequestForObject("/account/balance",
-        accountNumberDto(account), CurrentBalanceDto.class).getBalanceAmount()));
+    accounts.forEach(account -> {
+      CurrentBalanceDto balance = sendRequestForObject(
+          "/account/balance", accountNumberDto(account), CurrentBalanceDto.class, role, name);
+      account.balanceAmount(balance.getBalanceAmount());
+    });
 
     return client;
   }
@@ -70,41 +75,54 @@ public class ClientService {
     return new AccountNumberDto().accountNumber(accountDto.getNumber());
   }
 
-  public List<OperationDto> getLastOperations(AccountNumberDto accountNumberDto) {
+  public List<OperationDto> getLastOperations(AccountNumberDto accountNumberDto,
+      String role, String name
+  ) {
     OperationSearchDto search = new OperationSearchDto()
         .accountNumber(accountNumberDto.getAccountNumber())
         .quantity(String.valueOf(LAST_OPERATIONS_QUANTITY));
-    return sendRequestForList("/account/operation", search, new ParameterizedTypeReference<>() {
-    });
+    return sendRequestForList("/account/operation", search,
+        new ParameterizedTypeReference<>() {}, role, name);
   }
 
-  public ContactDto saveContact(ContactDto contactDto) {
-    return sendRequestForObject("/contact/save", contactDto, ContactDto.class);
+  public ContactDto saveContact(ContactDto contactDto, String role, String name) {
+    return sendRequestForObject("/contact/save", contactDto, ContactDto.class, role, name);
   }
 
-  public ClientLevelDto getClientLevel(ClientIdDto clientIdDto) {
-    return sendRequestForObject("/level", clientIdDto, ClientLevelDto.class);
+  public ClientLevelDto getClientLevel(ClientIdDto clientIdDto, String role, String name) {
+    return sendRequestForObject("/level", clientIdDto, ClientLevelDto.class, role, name);
   }
 
-  public LoanPaymentDto getLoanPayment(AccountNumberDto accountNumberDto) {
-    return sendRequestForObject("/account/loan-payment", accountNumberDto, LoanPaymentDto.class);
+  public LoanPaymentDto getLoanPayment(AccountNumberDto accountNumberDto,
+      String role, String name
+  ) {
+    return sendRequestForObject(
+        "/account/loan-payment", accountNumberDto, LoanPaymentDto.class, role, name);
   }
 
   private <T, R> List<R> sendRequestForList(String requestUri, T requestBody,
-      ParameterizedTypeReference<List<R>> responseType
+      ParameterizedTypeReference<List<R>> responseType, String role, String name
   ) {
-    Mono<List<R>> mono = getResponseSpec(requestUri, requestBody).bodyToMono(responseType);
+    Mono<List<R>> mono = getResponseSpec(requestUri, requestBody, role, name)
+        .bodyToMono(responseType);
     return getResponse(mono);
   }
 
-  private <T, R> R sendRequestForObject(String requestUri, T requestBody, Class<R> responseType) {
-    Mono<R> mono = getResponseSpec(requestUri, requestBody).bodyToMono(responseType);
+  private <T, R> R sendRequestForObject(String requestUri, T requestBody, Class<R> responseType,
+      String role, String name
+  ) {
+    Mono<R> mono = getResponseSpec(requestUri, requestBody, role, name)
+        .bodyToMono(responseType);
     return getResponse(mono);
   }
 
-  private <T> ResponseSpec getResponseSpec(String requestUri, T requestBody) {
+  private <T> ResponseSpec getResponseSpec(String requestUri, T requestBody,
+      String role, String name
+  ) {
     return webClient.post()
         .uri(requestUri)
+        .header("CRM-User-Role", role)
+        .header("CRM-User-Name", name)
         .bodyValue(requestBody)
         .retrieve()
         .onStatus(BAD_REQUEST::equals,
@@ -114,6 +132,10 @@ public class ClientService {
         .onStatus(INTERNAL_SERVER_ERROR::equals,
             response -> response.bodyToMono(ErrorResponseHelper.class).map(
                 error -> new ResponseStatusException(INTERNAL_SERVER_ERROR, error.getMessage())
+            ))
+        .onStatus(SERVICE_UNAVAILABLE::equals,
+            response -> response.bodyToMono(ErrorResponseHelper.class).map(
+                error -> new ResponseStatusException(SERVICE_UNAVAILABLE, error.getMessage())
             ));
   }
 
@@ -128,16 +150,10 @@ public class ClientService {
 
   private static class ErrorResponseHelper {
 
-    private final long timestamp;
     private final String message;
 
-    private ErrorResponseHelper(long timestamp, String message) {
-      this.timestamp = timestamp;
+    public ErrorResponseHelper(@JsonProperty("message") String message) {
       this.message = message;
-    }
-
-    public long getTimestamp() {
-      return timestamp;
     }
 
     private String getMessage() {
