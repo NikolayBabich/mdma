@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import org.springframework.stereotype.Service;
 import ru.filit.mdma.dm.model.AccountBalance;
 import ru.filit.mdma.dm.model.Operation.TypeEnum;
-import ru.filit.mdma.dm.repository.BalanceRepository;
+import ru.filit.mdma.dm.repository.BalanceYamlRepository;
 import ru.filit.mdma.dm.util.DateTimeUtil;
 import ru.filit.mdma.dm.web.dto.AccountNumberDto;
 import ru.filit.mdma.dm.web.dto.CurrentBalanceDto;
@@ -13,11 +13,11 @@ import ru.filit.mdma.dm.web.dto.CurrentBalanceDto;
 @Service
 public class BalanceService {
 
-  private final BalanceRepository balanceRepository;
+  private final BalanceYamlRepository balanceRepository;
   private final OperationService operationService;
 
   public BalanceService(
-      BalanceRepository balanceRepository,
+      BalanceYamlRepository balanceRepository,
       OperationService operationService
   ) {
     this.balanceRepository = balanceRepository;
@@ -33,7 +33,7 @@ public class BalanceService {
   public BigDecimal getBalance(String accountNumber, Long targetDate) {
     Long beginOfMonth = DateTimeUtil.getBeginOfMonth(targetDate);
 
-    BigDecimal latestBalanceAmount = balanceRepository.getAll().stream()
+    BigDecimal latestBalanceAmount = balanceRepository.readAll().stream()
         .filter(balance -> accountNumber.equals(balance.getAccountNumber())
             && beginOfMonth.equals(balance.getBalanceDate()))
         .findAny()

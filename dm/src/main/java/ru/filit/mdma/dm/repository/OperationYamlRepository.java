@@ -5,11 +5,11 @@ import org.springframework.stereotype.Repository;
 import ru.filit.mdma.dm.model.Operation;
 
 @Repository
-public class OperationRepository extends AbstractYamlRepository<Operation> {
+public class OperationYamlRepository extends AbstractWritableYamlRepository<Operation> {
 
   private static final String YAML_PATH = "datafiles/operations.yml";
 
-  public OperationRepository(YAMLMapper yamlMapper) {
+  public OperationYamlRepository(YAMLMapper yamlMapper) {
     super(yamlMapper, Operation.class, YAML_PATH);
   }
 

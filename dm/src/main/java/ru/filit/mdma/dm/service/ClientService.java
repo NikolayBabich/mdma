@@ -11,7 +11,7 @@ import ru.filit.mdma.dm.mapping.ClientMapper;
 import ru.filit.mdma.dm.model.Account.StatusEnum;
 import ru.filit.mdma.dm.model.Client;
 import ru.filit.mdma.dm.model.ClientLevel;
-import ru.filit.mdma.dm.repository.ClientRepository;
+import ru.filit.mdma.dm.repository.ClientYamlRepository;
 import ru.filit.mdma.dm.util.DateTimeUtil;
 import ru.filit.mdma.dm.util.Utils;
 import ru.filit.mdma.dm.web.dto.ClientDto;
@@ -24,13 +24,13 @@ public class ClientService {
 
   private static final int DAYS_FOR_AVG_BALANCE = 30;
 
-  private final ClientRepository clientRepository;
+  private final ClientYamlRepository clientRepository;
   private final ClientMapper clientMapper;
   private final AccountService accountService;
   private final AccountMapper accountMapper;
 
   public ClientService(
-      ClientRepository clientRepository,
+      ClientYamlRepository clientRepository,
       ClientMapper clientMapper,
       AccountService accountService,
       AccountMapper accountMapper
@@ -43,7 +43,7 @@ public class ClientService {
 
   public List<ClientDto> findClients(ClientSearchDto clientSearchDto) {
     Client searchSample = clientMapper.fromSearchDto(clientSearchDto);
-    return clientRepository.getAll().stream()
+    return clientRepository.readAll().stream()
         .filter(client -> Utils.equalsByNonNull(searchSample, client))
         .map(clientMapper::toDto)
         .collect(Collectors.toList());

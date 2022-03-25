@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import ru.filit.mdma.dm.exception.NotFoundException;
 import ru.filit.mdma.dm.mapping.ContactMapper;
 import ru.filit.mdma.dm.model.Contact;
-import ru.filit.mdma.dm.repository.ClientRepository;
-import ru.filit.mdma.dm.repository.ContactRepository;
+import ru.filit.mdma.dm.repository.ClientYamlRepository;
+import ru.filit.mdma.dm.repository.ContactYamlRepository;
 import ru.filit.mdma.dm.web.dto.ClientIdDto;
 import ru.filit.mdma.dm.web.dto.ContactDto;
 
@@ -20,14 +20,14 @@ public class ContactService {
   private static final int ID_LOWER_BOUND = 10_000;
   private static final int ID_UPPER_BOUND = 100_000;
 
-  private final ContactRepository contactRepository;
+  private final ContactYamlRepository contactRepository;
   private final ContactMapper contactMapper;
-  private final ClientRepository clientRepository;
+  private final ClientYamlRepository clientRepository;
 
   public ContactService(
-      ContactRepository contactRepository,
+      ContactYamlRepository contactRepository,
       ContactMapper contactMapper,
-      ClientRepository clientRepository
+      ClientYamlRepository clientRepository
   ) {
     this.contactRepository = contactRepository;
     this.contactMapper = contactMapper;
@@ -36,7 +36,7 @@ public class ContactService {
 
   public List<ContactDto> findContacts(ClientIdDto clientIdDto) {
     String clientId = clientIdDto.getId();
-    return contactRepository.getAll().stream()
+    return contactRepository.readAll().stream()
         .filter(contact -> clientId.equals(contact.getClientId()))
         .map(contactMapper::toDto)
         .collect(Collectors.toList());
@@ -50,7 +50,7 @@ public class ContactService {
 
     Contact newContact = contactMapper.fromDto(contactDto);
     ContactDto retVal;
-    List<Contact> allContacts = contactRepository.getAll();
+    List<Contact> allContacts = contactRepository.readAll();
     String contactId = contactDto.getId();
     if (contactId == null) {
       Set<Integer> contactIds = allContacts.stream()
@@ -69,7 +69,7 @@ public class ContactService {
       retVal = contactMapper.toDto(
           existedContact.type(newContact.getType()).value(newContact.getValue()));
     }
-    contactRepository.saveAll(allContacts);
+    contactRepository.writeAll(allContacts);
     return retVal;
   }
 

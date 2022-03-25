@@ -11,7 +11,7 @@ import ru.filit.mdma.dm.exception.NotFoundException;
 import ru.filit.mdma.dm.mapping.AccountMapper;
 import ru.filit.mdma.dm.model.Account;
 import ru.filit.mdma.dm.model.Account.TypeEnum;
-import ru.filit.mdma.dm.repository.AccountRepository;
+import ru.filit.mdma.dm.repository.AccountYamlRepository;
 import ru.filit.mdma.dm.util.DateTimeUtil;
 import ru.filit.mdma.dm.web.dto.AccountDto;
 import ru.filit.mdma.dm.web.dto.AccountNumberDto;
@@ -24,12 +24,12 @@ public class AccountService {
   private static final int DAYS_IN_HALF_YEAR = 182;
   private static final BigDecimal LOAN_MULTIPLIER = BigDecimal.valueOf(0.0007);
 
-  private final AccountRepository accountRepository;
+  private final AccountYamlRepository accountRepository;
   private final AccountMapper accountMapper;
   private final BalanceService balanceService;
 
   public AccountService(
-      AccountRepository accountRepository,
+      AccountYamlRepository accountRepository,
       AccountMapper accountMapper,
       BalanceService balanceService
   ) {
@@ -40,7 +40,7 @@ public class AccountService {
 
   public List<AccountDto> findAccounts(ClientIdDto clientIdDto) {
     String clientId = clientIdDto.getId();
-    return accountRepository.getAll().stream()
+    return accountRepository.readAll().stream()
         .filter(account -> clientId.equals(account.getClientId()))
         .map(accountMapper::toDto)
         .collect(Collectors.toList());

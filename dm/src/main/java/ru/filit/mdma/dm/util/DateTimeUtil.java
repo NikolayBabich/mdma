@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 
 public final class DateTimeUtil {
 
-  private static final long SECONDS_IN_DAY = 60 * 60 * 24;
   public static final int MAX_HOUR = 23;
   public static final int MAX_MINUTE = 59;
   public static final int MAX_SECOND = 59;

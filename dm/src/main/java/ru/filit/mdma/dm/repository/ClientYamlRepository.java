@@ -6,16 +6,16 @@ import org.springframework.stereotype.Repository;
 import ru.filit.mdma.dm.model.Client;
 
 @Repository
-public class ClientRepository extends AbstractYamlRepository<Client> {
+public class ClientYamlRepository extends AbstractWritableYamlRepository<Client> {
 
   private static final String YAML_PATH = "datafiles/clients.yml";
 
-  public ClientRepository(YAMLMapper yamlMapper) {
+  public ClientYamlRepository(YAMLMapper yamlMapper) {
     super(yamlMapper, Client.class, YAML_PATH);
   }
 
   public Optional<Client> getById(String id) {
-    return getAll().stream()
+    return readAll().stream()
         .filter(client -> id.equals(client.getId()))
         .findAny();
   }

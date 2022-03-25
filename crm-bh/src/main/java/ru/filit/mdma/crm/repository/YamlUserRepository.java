@@ -25,7 +25,7 @@ public class YamlUserRepository implements UserRepository {
   }
 
   @Override
-  public List<UserExtended> getAllUsers() {
+  public List<UserExtended> readAllUsers() {
     try {
       return yamlMapper.readValue(yamlResource.getInputStream(), collectionType);
     } catch (IOException e) {

@@ -5,6 +5,6 @@ import ru.filit.mdma.crm.model.UserExtended;
 
 public interface UserRepository {
 
-  List<UserExtended> getAllUsers();
+  List<UserExtended> readAllUsers();
 
 }

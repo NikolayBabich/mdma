@@ -2,27 +2,24 @@ package ru.filit.mdma.dm.repository;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import ru.filit.mdma.dm.util.FileUtil;
 
-public abstract class AbstractYamlRepository<T> implements YamlRepository<T> {
+public abstract class AbstractYamlRepository<T> implements ReadableRepository<T> {
 
   protected final YAMLMapper yamlMapper;
   private final CollectionType collectionType;
-  protected final File yamlFile;
 
-  protected AbstractYamlRepository(YAMLMapper mapper, Class<? extends T> clazz, String yamlPath) {
+  protected AbstractYamlRepository(YAMLMapper mapper, Class<? extends T> clazz) {
     this.yamlMapper = mapper;
     this.collectionType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
-    this.yamlFile = FileUtil.copyOutsideOfJar(yamlPath);
   }
 
   @Override
-  public List<T> getAll() {
+  public List<T> readAll(InputStream is) {
     try {
-      return yamlMapper.readValue(yamlFile, collectionType);
+      return yamlMapper.readValue(is, collectionType);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

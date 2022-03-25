@@ -17,7 +17,7 @@ public class YamlUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return repository.getAllUsers().stream()
+    return repository.readAllUsers().stream()
         .filter(u -> username.equals(u.getUsername()))
         .findAny()
         .map(AuthUser::new)

@@ -6,16 +6,16 @@ import org.springframework.stereotype.Repository;
 import ru.filit.mdma.dm.model.Account;
 
 @Repository
-public class AccountRepository extends AbstractYamlRepository<Account> {
+public class AccountYamlRepository extends AbstractWritableYamlRepository<Account> {
 
   private static final String YAML_PATH = "datafiles/accounts.yml";
 
-  public AccountRepository(YAMLMapper yamlMapper) {
+  public AccountYamlRepository(YAMLMapper yamlMapper) {
     super(yamlMapper, Account.class, YAML_PATH);
   }
 
   public Optional<Account> getByNumber(String accountNumber) {
-    return getAll().stream()
+    return readAll().stream()
         .filter(account -> accountNumber.equals(account.getNumber()))
         .findAny();
   }
