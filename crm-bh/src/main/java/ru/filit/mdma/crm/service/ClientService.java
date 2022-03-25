@@ -1,7 +1,6 @@
 package ru.filit.mdma.crm.service;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,6 +8,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
@@ -125,18 +125,11 @@ public class ClientService {
         .header("CRM-User-Name", name)
         .bodyValue(requestBody)
         .retrieve()
-        .onStatus(BAD_REQUEST::equals,
+        .onStatus(HttpStatus::isError,
             response -> response.bodyToMono(ErrorResponseHelper.class).map(
-                error -> new ResponseStatusException(BAD_REQUEST, error.getMessage())
-            ))
-        .onStatus(INTERNAL_SERVER_ERROR::equals,
-            response -> response.bodyToMono(ErrorResponseHelper.class).map(
-                error -> new ResponseStatusException(INTERNAL_SERVER_ERROR, error.getMessage())
-            ))
-        .onStatus(SERVICE_UNAVAILABLE::equals,
-            response -> response.bodyToMono(ErrorResponseHelper.class).map(
-                error -> new ResponseStatusException(SERVICE_UNAVAILABLE, error.getMessage())
-            ));
+                error -> new ResponseStatusException(error.getStatus(), error.getMessage())
+            )
+        );
   }
 
   private <R> R getResponse(Mono<R> mono) {
@@ -150,10 +143,19 @@ public class ClientService {
 
   private static class ErrorResponseHelper {
 
+    private final HttpStatus status;
     private final String message;
 
-    public ErrorResponseHelper(@JsonProperty("message") String message) {
+    public ErrorResponseHelper(
+        @JsonProperty("status") int status,
+        @JsonProperty("message") String message
+    ) {
+      this.status = HttpStatus.valueOf(status);
       this.message = message;
+    }
+
+    private HttpStatus getStatus() {
+      return status;
     }
 
     private String getMessage() {

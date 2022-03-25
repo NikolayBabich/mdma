@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class AppConfig {
 
   private static final String URL_FORMAT = "http://%s:%s/%s";
-  private static final String API_BASE_URL = "dm/client";
+  private static final String API_BASE_URL = "dm";
   private static final String USER_AGENT = "DMS/1.0";
 
   private final String serverDmHost;

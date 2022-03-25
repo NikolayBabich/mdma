@@ -16,6 +16,7 @@
   </parent>
 
   <dependencies>
+    <!-- Apache Commons -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -31,7 +32,6 @@
       <artifactId>commons-io</artifactId>
       <version>${commons.io.version}</version>
     </dependency>
-
   </dependencies>
 
   <build>

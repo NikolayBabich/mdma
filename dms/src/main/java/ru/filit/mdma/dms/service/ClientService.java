@@ -1,7 +1,5 @@
 package ru.filit.mdma.dms.service;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,12 +7,16 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import ru.filit.mdma.dms.util.Utils;
+import ru.filit.mdma.dms.web.dto.AccessDto;
+import ru.filit.mdma.dms.web.dto.AccessRequestDto;
 import ru.filit.mdma.dms.web.dto.AccountDto;
 import ru.filit.mdma.dms.web.dto.AccountNumberDto;
 import ru.filit.mdma.dms.web.dto.ClientDto;
@@ -30,6 +32,7 @@ import ru.filit.mdma.dms.web.dto.OperationSearchDto;
 @Service
 public class ClientService {
 
+  private static final String VERSION = "2";
   private static final int TIMEOUT_IN_SECONDS = 5;
 
   private final WebClient webClient;
@@ -38,54 +41,64 @@ public class ClientService {
     this.webClient = webClient;
   }
 
-  public List<ClientDto> findClients(ClientSearchDto clientSearchDto, String role, String name) {
-    List<ClientDto> clients = sendRequestForList("/", clientSearchDto,
+  public List<AccessDto> getAccess(String role) {
+    return sendRequestForList("/access", new AccessRequestDto(role, VERSION),
         new ParameterizedTypeReference<>() {});
-    return clients;
+  }
+
+  public List<ClientDto> findClients(ClientSearchDto clientSearchDto, String role, String name) {
+    List<ClientDto> clients = sendRequestForList("/client", clientSearchDto,
+        new ParameterizedTypeReference<>() {});
+    return maskResponse(clients, getAccess(role));
   }
 
   public List<ContactDto> findContacts(ClientIdDto clientIdDto, String role, String name) {
-    List<ContactDto> contacts = sendRequestForList("/contact", clientIdDto,
+    List<ContactDto> contacts = sendRequestForList("/client/contact", clientIdDto,
         new ParameterizedTypeReference<>() {});
-    return contacts;
+    return maskResponse(contacts, getAccess(role));
   }
 
   public List<AccountDto> findAccounts(ClientIdDto clientIdDto, String role, String name) {
-    List<AccountDto> accounts = sendRequestForList("/account", clientIdDto,
+    List<AccountDto> accounts = sendRequestForList("/client/account", clientIdDto,
         new ParameterizedTypeReference<>() {});
-    return accounts;
+    return maskResponse(accounts, getAccess(role));
   }
 
   public CurrentBalanceDto getBalance(AccountNumberDto accountNumberDto, String role, String name) {
-    CurrentBalanceDto balance = sendRequestForObject("/account/balance", accountNumberDto,
+    CurrentBalanceDto balance = sendRequestForObject("/client/account/balance", accountNumberDto,
         CurrentBalanceDto.class);
-    return balance;
+    return maskResponse(balance, getAccess(role));
   }
 
   public List<OperationDto> findOperations(OperationSearchDto operationSearchDto,
       String role, String name
   ) {
-    List<OperationDto> operations = sendRequestForList("/account/operation", operationSearchDto,
-        new ParameterizedTypeReference<>() {});
-    return operations;
+    List<OperationDto> operations = sendRequestForList("/client/account/operation",
+        operationSearchDto, new ParameterizedTypeReference<>() {});
+    return maskResponse(operations, getAccess(role));
   }
 
   public ContactDto saveContact(ContactDto contactDto, String role, String name) {
-    ContactDto contact = sendRequestForObject("/contact/save", contactDto, ContactDto.class);
-    return contact;
+    ContactDto contact = sendRequestForObject("/client/contact/save", contactDto, ContactDto.class);
+    return maskResponse(contact, getAccess(role));
   }
 
   public ClientLevelDto getLevel(ClientIdDto clientIdDto, String role, String name) {
-    ClientLevelDto clientLevel = sendRequestForObject("/level", clientIdDto, ClientLevelDto.class);
-    return clientLevel;
+    ClientLevelDto clientLevel = sendRequestForObject("/client/level", clientIdDto,
+        ClientLevelDto.class);
+    return maskResponse(clientLevel, getAccess(role));
   }
 
   public LoanPaymentDto getLoanPayment(AccountNumberDto accountNumberDto,
       String role, String name
   ) {
-    LoanPaymentDto loanPayment = sendRequestForObject("/level", accountNumberDto,
-        LoanPaymentDto.class);
-    return loanPayment;
+    LoanPaymentDto loanPayment = sendRequestForObject("/client/account/loan-payment",
+        accountNumberDto, LoanPaymentDto.class);
+    return maskResponse(loanPayment, getAccess(role));
+  }
+
+  public <T> T maskResponse(T original, List<AccessDto> access) {
+    return Utils.getMasked(original, access);
   }
 
   private <T, R> List<R> sendRequestForList(String requestUri, T requestBody,
@@ -107,14 +120,11 @@ public class ClientService {
         .uri(requestUri)
         .bodyValue(requestBody)
         .retrieve()
-        .onStatus(BAD_REQUEST::equals,
+        .onStatus(HttpStatus::isError,
             response -> response.bodyToMono(ErrorResponseHelper.class).map(
-                error -> new ResponseStatusException(BAD_REQUEST, error.getMessage())
-            ))
-        .onStatus(INTERNAL_SERVER_ERROR::equals,
-            response -> response.bodyToMono(ErrorResponseHelper.class).map(
-                error -> new ResponseStatusException(INTERNAL_SERVER_ERROR, error.getMessage())
-            ));
+                error -> new ResponseStatusException(error.getStatus(), error.getMessage())
+            )
+        );
   }
 
   private <R> R getResponse(Mono<R> mono) {
@@ -128,10 +138,19 @@ public class ClientService {
 
   private static class ErrorResponseHelper {
 
+    private final HttpStatus status;
     private final String message;
 
-    public ErrorResponseHelper(@JsonProperty("message") String message) {
+    public ErrorResponseHelper(
+        @JsonProperty("status") int status,
+        @JsonProperty("message") String message
+    ) {
+      this.status = HttpStatus.valueOf(status);
       this.message = message;
+    }
+
+    private HttpStatus getStatus() {
+      return status;
     }
 
     private String getMessage() {

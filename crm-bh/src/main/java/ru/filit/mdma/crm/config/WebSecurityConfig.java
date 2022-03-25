@@ -32,6 +32,8 @@ public class WebSecurityConfig {
     http
         .authorizeHttpRequests(authz -> authz
             .antMatchers("/client/**").authenticated()
+            // https://github.com/spring-projects/spring-boot/issues/29655
+            .antMatchers("/error").permitAll()
         )
         .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(entryPoint))
         .userDetailsService(userDetailsService)
