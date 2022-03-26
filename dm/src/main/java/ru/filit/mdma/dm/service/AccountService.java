@@ -12,7 +12,7 @@ import ru.filit.mdma.dm.mapping.AccountMapper;
 import ru.filit.mdma.dm.model.Account;
 import ru.filit.mdma.dm.model.Account.TypeEnum;
 import ru.filit.mdma.dm.repository.AccountYamlRepository;
-import ru.filit.mdma.dm.util.DateTimeUtil;
+import ru.filit.mdma.dm.util.DateTimeUtils;
 import ru.filit.mdma.dm.web.dto.AccountDto;
 import ru.filit.mdma.dm.web.dto.AccountNumberDto;
 import ru.filit.mdma.dm.web.dto.ClientIdDto;
@@ -68,7 +68,7 @@ public class AccountService {
     }
 
     List<BigDecimal> negativeBalances =
-        DateTimeUtil.getEndsOfLastDays(DAYS_IN_HALF_YEAR, false).stream()
+        DateTimeUtils.getEndsOfLastDays(DAYS_IN_HALF_YEAR, false).stream()
             .map(timestamp -> balanceService.getBalance(accountNumber, timestamp))
             .takeWhile(balance -> balance.compareTo(BigDecimal.ZERO) < 0)
             .collect(Collectors.toList());

@@ -12,7 +12,7 @@ import ru.filit.mdma.dm.model.Account.StatusEnum;
 import ru.filit.mdma.dm.model.Client;
 import ru.filit.mdma.dm.model.ClientLevel;
 import ru.filit.mdma.dm.repository.ClientYamlRepository;
-import ru.filit.mdma.dm.util.DateTimeUtil;
+import ru.filit.mdma.dm.util.DateTimeUtils;
 import ru.filit.mdma.dm.util.Utils;
 import ru.filit.mdma.dm.web.dto.ClientDto;
 import ru.filit.mdma.dm.web.dto.ClientIdDto;
@@ -61,7 +61,7 @@ public class ClientService {
         .map(account -> new ClientLevelHelper(
             account.getNumber(),
             accountService.getAverageBalance(
-                account, DateTimeUtil.getEndsOfLastDays(DAYS_FOR_AVG_BALANCE, true)
+                account, DateTimeUtils.getEndsOfLastDays(DAYS_FOR_AVG_BALANCE, true)
             ))
         )
         .max(Comparator.comparing(ClientLevelHelper::getAvgBalance))

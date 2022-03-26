@@ -49,25 +49,25 @@ public class ClientService {
   public List<ClientDto> findClients(ClientSearchDto clientSearchDto, String role, String name) {
     List<ClientDto> clients = sendRequestForList("/client", clientSearchDto,
         new ParameterizedTypeReference<>() {});
-    return maskResponse(clients, getAccess(role));
+    return maskResponseBody(clients, getAccess(role));
   }
 
   public List<ContactDto> findContacts(ClientIdDto clientIdDto, String role, String name) {
     List<ContactDto> contacts = sendRequestForList("/client/contact", clientIdDto,
         new ParameterizedTypeReference<>() {});
-    return maskResponse(contacts, getAccess(role));
+    return maskResponseBody(contacts, getAccess(role));
   }
 
   public List<AccountDto> findAccounts(ClientIdDto clientIdDto, String role, String name) {
     List<AccountDto> accounts = sendRequestForList("/client/account", clientIdDto,
         new ParameterizedTypeReference<>() {});
-    return maskResponse(accounts, getAccess(role));
+    return maskResponseBody(accounts, getAccess(role));
   }
 
   public CurrentBalanceDto getBalance(AccountNumberDto accountNumberDto, String role, String name) {
     CurrentBalanceDto balance = sendRequestForObject("/client/account/balance", accountNumberDto,
         CurrentBalanceDto.class);
-    return maskResponse(balance, getAccess(role));
+    return maskResponseBody(balance, getAccess(role));
   }
 
   public List<OperationDto> findOperations(OperationSearchDto operationSearchDto,
@@ -75,18 +75,18 @@ public class ClientService {
   ) {
     List<OperationDto> operations = sendRequestForList("/client/account/operation",
         operationSearchDto, new ParameterizedTypeReference<>() {});
-    return maskResponse(operations, getAccess(role));
+    return maskResponseBody(operations, getAccess(role));
   }
 
   public ContactDto saveContact(ContactDto contactDto, String role, String name) {
     ContactDto contact = sendRequestForObject("/client/contact/save", contactDto, ContactDto.class);
-    return maskResponse(contact, getAccess(role));
+    return maskResponseBody(contact, getAccess(role));
   }
 
   public ClientLevelDto getLevel(ClientIdDto clientIdDto, String role, String name) {
     ClientLevelDto clientLevel = sendRequestForObject("/client/level", clientIdDto,
         ClientLevelDto.class);
-    return maskResponse(clientLevel, getAccess(role));
+    return maskResponseBody(clientLevel, getAccess(role));
   }
 
   public LoanPaymentDto getLoanPayment(AccountNumberDto accountNumberDto,
@@ -94,10 +94,10 @@ public class ClientService {
   ) {
     LoanPaymentDto loanPayment = sendRequestForObject("/client/account/loan-payment",
         accountNumberDto, LoanPaymentDto.class);
-    return maskResponse(loanPayment, getAccess(role));
+    return maskResponseBody(loanPayment, getAccess(role));
   }
 
-  public <T> T maskResponse(T original, List<AccessDto> access) {
+  public <T> T maskResponseBody(T original, List<AccessDto> access) {
     return Utils.getMasked(original, access);
   }
 

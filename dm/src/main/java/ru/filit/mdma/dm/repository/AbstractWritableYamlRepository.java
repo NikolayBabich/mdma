@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import ru.filit.mdma.dm.util.FileUtil;
+import ru.filit.mdma.dm.util.FileUtils;
 
 public abstract class AbstractWritableYamlRepository<T>
     extends AbstractYamlRepository<T> implements WritableRepository<T> {
@@ -17,7 +17,7 @@ public abstract class AbstractWritableYamlRepository<T>
       String yamlPath
   ) {
     super(mapper, clazz);
-    this.yamlFile = FileUtil.copyOutsideOfJar(yamlPath);
+    this.yamlFile = FileUtils.copyOutsideOfJar(yamlPath);
   }
 
   public List<T> readAll() {

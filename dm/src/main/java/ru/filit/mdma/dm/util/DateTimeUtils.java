@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class DateTimeUtil {
+public final class DateTimeUtils {
 
   public static final int MAX_HOUR = 23;
   public static final int MAX_MINUTE = 59;
   public static final int MAX_SECOND = 59;
 
-  private DateTimeUtil() {
+  private DateTimeUtils() {
     throw new UnsupportedOperationException("Utility class is not instantiable");
   }
 
@@ -67,7 +67,7 @@ public final class DateTimeUtil {
     return Stream.concat(lastDates, Stream.of(currentDate))
         .filter(date -> keepHolidays
             || date.getDayOfWeek() != SATURDAY && date.getDayOfWeek() != SUNDAY)
-        .map(DateTimeUtil::getEndOfDay)
+        .map(DateTimeUtils::getEndOfDay)
         .sorted(Comparator.reverseOrder())
         .collect(Collectors.toList());
   }

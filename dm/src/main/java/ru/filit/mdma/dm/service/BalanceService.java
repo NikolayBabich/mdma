@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.filit.mdma.dm.model.AccountBalance;
 import ru.filit.mdma.dm.model.Operation.TypeEnum;
 import ru.filit.mdma.dm.repository.BalanceYamlRepository;
-import ru.filit.mdma.dm.util.DateTimeUtil;
+import ru.filit.mdma.dm.util.DateTimeUtils;
 import ru.filit.mdma.dm.web.dto.AccountNumberDto;
 import ru.filit.mdma.dm.web.dto.CurrentBalanceDto;
 
@@ -26,12 +26,12 @@ public class BalanceService {
 
   public CurrentBalanceDto getBalance(AccountNumberDto accountNumberDto) {
     BigDecimal balance = getBalance(accountNumberDto.getAccountNumber(),
-        DateTimeUtil.getEndOfCurrentDay());
+        DateTimeUtils.getEndOfCurrentDay());
     return new CurrentBalanceDto().balanceAmount(balance.toString());
   }
 
   public BigDecimal getBalance(String accountNumber, Long targetDate) {
-    Long beginOfMonth = DateTimeUtil.getBeginOfMonth(targetDate);
+    Long beginOfMonth = DateTimeUtils.getBeginOfMonth(targetDate);
 
     BigDecimal latestBalanceAmount = balanceRepository.readAll().stream()
         .filter(balance -> accountNumber.equals(balance.getAccountNumber())

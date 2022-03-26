@@ -30,7 +30,7 @@ public final class Utils {
   }
 
   private static String getEntityName(Object bean) {
-    return bean.getClass().getSimpleName().toLowerCase().replaceAll("dto", "");
+    return bean.getClass().getSimpleName().toLowerCase().replace("dto", "");
   }
 
   private static Set<String> getAllowedProperties(List<AccessDto> accesses, String entityName) {

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.filit.mdma.dm.mapping.OperationMapper;
 import ru.filit.mdma.dm.model.Operation;
 import ru.filit.mdma.dm.repository.OperationYamlRepository;
-import ru.filit.mdma.dm.util.DateTimeUtil;
+import ru.filit.mdma.dm.util.DateTimeUtils;
 import ru.filit.mdma.dm.web.dto.OperationDto;
 import ru.filit.mdma.dm.web.dto.OperationSearchDto;
 
@@ -24,7 +24,7 @@ public class OperationService {
 
   public List<OperationDto> findOperations(OperationSearchDto operationSearchDto) {
     List<Operation> operations = getOperationsBetween(
-        operationSearchDto.getAccountNumber(), 0L, DateTimeUtil.getEndOfCurrentDay());
+        operationSearchDto.getAccountNumber(), 0L, DateTimeUtils.getEndOfCurrentDay());
 
     return operations.stream()
         .map(mapper::toDto)

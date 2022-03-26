@@ -116,7 +116,7 @@ public class ClientController implements ClientApi {
         .map(GrantedAuthority::getAuthority)
         .filter(authority -> authority.startsWith(ROLE_PREFIX))
         .findFirst()
-        .map(role -> role.replaceFirst(ROLE_PREFIX, ""))
+        .map(role -> role.replace(ROLE_PREFIX, ""))
         .orElseThrow(() -> new IllegalStateException("Authenticated user has no role"));
   }
 

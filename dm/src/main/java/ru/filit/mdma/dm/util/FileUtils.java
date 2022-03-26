@@ -1,18 +1,20 @@
 package ru.filit.mdma.dm.util;
 
+import static org.apache.commons.io.FileUtils.copyURLToFile;
+import static org.apache.commons.io.FileUtils.getFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import org.apache.commons.io.FileUtils;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.core.io.ClassPathResource;
 import ru.filit.mdma.dm.Application;
 
-public final class FileUtil {
+public final class FileUtils {
 
   private static final File currentRunDirectory = new ApplicationHome(Application.class).getDir();
 
-  private FileUtil() {
+  private FileUtils() {
     throw new UnsupportedOperationException("Utility class is not instantiable");
   }
 
@@ -21,8 +23,8 @@ public final class FileUtil {
       ClassPathResource classPathResource = new ClassPathResource(fileName);
       URL resourceUrl = classPathResource.getURL();
       if (resourceUrl.getPath().contains("jar")) {
-        File outsideFile = FileUtils.getFile(currentRunDirectory, fileName);
-        FileUtils.copyURLToFile(resourceUrl, outsideFile);
+        File outsideFile = getFile(currentRunDirectory, fileName);
+        copyURLToFile(resourceUrl, outsideFile);
         return outsideFile;
       }
       return classPathResource.getFile();
