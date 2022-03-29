@@ -15,3 +15,7 @@ system.element:
   queue:
     host:
     port:
+
+logging.level:
+  org.apache.ignite:
+        internal: WARN
