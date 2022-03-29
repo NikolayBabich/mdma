@@ -7,6 +7,10 @@ server:
   error:
     include-message: always
 
+spring:
+  jackson:
+    default-property-inclusion: non_null
+
 # Components configuration
 system.element:
   dm:

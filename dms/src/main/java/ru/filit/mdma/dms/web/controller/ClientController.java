@@ -48,7 +48,8 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<ClientDto>> getClient(ClientSearchDto clientSearchDto,
       String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.findClients(clientSearchDto, userRole, userName));
+    String uri = "/dm/client";
+    return ResponseEntity.ok(clientService.findClients(clientSearchDto, userRole, userName, uri));
   }
 
   /**
@@ -63,7 +64,8 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<ContactDto>> getContact(ClientIdDto clientIdDto,
       String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.findContacts(clientIdDto, userRole, userName));
+    String uri = "/dm/client/contact";
+    return ResponseEntity.ok(clientService.findContacts(clientIdDto, userRole, userName, uri));
   }
 
   /**
@@ -78,7 +80,8 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<AccountDto>> getAccount(ClientIdDto clientIdDto,
       String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.findAccounts(clientIdDto, userRole, userName));
+    String uri = "/dm/client/account";
+    return ResponseEntity.ok(clientService.findAccounts(clientIdDto, userRole, userName, uri));
   }
 
   /**
@@ -93,7 +96,8 @@ public class ClientController implements ClientApi {
   public ResponseEntity<CurrentBalanceDto> getAccountBalance(AccountNumberDto accountNumberDto,
       String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.getBalance(accountNumberDto, userRole, userName));
+    String uri = "/dm/client/account/balance";
+    return ResponseEntity.ok(clientService.getBalance(accountNumberDto, userRole, userName, uri));
   }
 
   /**
@@ -108,7 +112,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<OperationDto>> getAccountOperations(
       OperationSearchDto operationSearchDto, String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.findOperations(operationSearchDto, userRole, userName));
+    String uri = "/dm/client/account/operation";
+    return ResponseEntity.ok(clientService.findOperations(operationSearchDto, userRole,
+        userName, uri));
   }
 
   /**
@@ -123,7 +129,8 @@ public class ClientController implements ClientApi {
   public ResponseEntity<ContactDto> saveContact(ContactDto contactDto,
       String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.saveContact(contactDto, userRole, userName));
+    String uri = "/dm/client/contact/save";
+    return ResponseEntity.ok(clientService.saveContact(contactDto, userRole, userName, uri));
   }
 
   /**
@@ -138,7 +145,8 @@ public class ClientController implements ClientApi {
   public ResponseEntity<ClientLevelDto> getClientLevel(ClientIdDto clientIdDto,
       String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.getLevel(clientIdDto, userRole, userName));
+    String uri = "/dm/client/level";
+    return ResponseEntity.ok(clientService.getLevel(clientIdDto, userRole, userName, uri));
   }
 
   /**
@@ -153,7 +161,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<LoanPaymentDto> getLoanPayment(AccountNumberDto accountNumberDto,
       String userRole, String userName
   ) {
-    return ResponseEntity.ok(clientService.getLoanPayment(accountNumberDto, userRole, userName));
+    String uri = "/dm/client/account/loan-payment";
+    return ResponseEntity.ok(clientService.getLoanPayment(accountNumberDto, userRole,
+        userName, uri));
   }
 
 }
