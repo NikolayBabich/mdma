@@ -17,8 +17,8 @@ system.element:
     host: localhost
     port: 8082
   queue:
-    host:
-    port:
+    host: "[::1]"
+    port: 9092
 
 logging.level:
   org.apache.ignite:
