@@ -31,7 +31,7 @@ public abstract class AbstractWritableYamlRepository<T>
   @Override
   public void writeAll(List<T> entities) {
     try {
-      yamlMapper.writeValue(yamlFile, entities);
+      getYamlMapper().writeValue(yamlFile, entities);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

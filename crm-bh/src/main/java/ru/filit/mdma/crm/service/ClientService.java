@@ -141,12 +141,12 @@ public class ClientService {
         .block();
   }
 
-  private static class ErrorResponseHelper {
+  private static final class ErrorResponseHelper {
 
     private final HttpStatus status;
     private final String message;
 
-    public ErrorResponseHelper(
+    private ErrorResponseHelper(
         @JsonProperty("status") int status,
         @JsonProperty("message") String message
     ) {

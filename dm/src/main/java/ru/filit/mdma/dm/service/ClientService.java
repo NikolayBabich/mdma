@@ -73,7 +73,7 @@ public class ClientService {
         .avgBalance(helper.getAvgBalance().toString());
   }
 
-  private static class ClientLevelHelper {
+  private static final class ClientLevelHelper {
 
     private static final BigDecimal MIDDLE_LEVEL_LIMIT = BigDecimal.valueOf(30_000);
     private static final BigDecimal SILVER_LEVEL_LIMIT = BigDecimal.valueOf(300_000);
@@ -83,7 +83,7 @@ public class ClientService {
     private final BigDecimal avgBalance;
     private final ClientLevel level;
 
-    public ClientLevelHelper(String accountNumber, BigDecimal avgBalance) {
+    private ClientLevelHelper(String accountNumber, BigDecimal avgBalance) {
       this.accountNumber = accountNumber;
       this.avgBalance = avgBalance;
       this.level = computeLevel(avgBalance);

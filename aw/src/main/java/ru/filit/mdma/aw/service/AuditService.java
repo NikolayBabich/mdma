@@ -15,13 +15,13 @@ import ru.filit.mdma.aw.config.KafkaConfig;
 public class AuditService {
 
   private static final String AUDIT_FILENAME = "auditfiles/dm-audit.txt";
-  private static final File auditFile = FileUtils.getFile(
+  private static final File AUDIT_FILE = FileUtils.getFile(
       new ApplicationHome(Application.class).getDir(), AUDIT_FILENAME);
 
   @KafkaListener(topics = KafkaConfig.TOPIC_NAME, groupId = KafkaConfig.GROUP_ID)
   public void listen(String message) {
     try {
-      FileUtils.writeStringToFile(auditFile, message + System.lineSeparator(), UTF_8, true);
+      FileUtils.writeStringToFile(AUDIT_FILE, message + System.lineSeparator(), UTF_8, true);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

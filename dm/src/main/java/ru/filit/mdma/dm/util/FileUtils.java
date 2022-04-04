@@ -12,7 +12,7 @@ import ru.filit.mdma.dm.Application;
 
 public final class FileUtils {
 
-  private static final File currentRunDirectory = new ApplicationHome(Application.class).getDir();
+  private static final File CURRENT_RUN_DIRECTORY = new ApplicationHome(Application.class).getDir();
 
   private FileUtils() {
     throw new UnsupportedOperationException("Utility class is not instantiable");
@@ -23,7 +23,7 @@ public final class FileUtils {
       ClassPathResource classPathResource = new ClassPathResource(fileName);
       URL resourceUrl = classPathResource.getURL();
       if (resourceUrl.getPath().contains("jar")) {
-        File outsideFile = getFile(currentRunDirectory, fileName);
+        File outsideFile = getFile(CURRENT_RUN_DIRECTORY, fileName);
         copyURLToFile(resourceUrl, outsideFile);
         return outsideFile;
       }

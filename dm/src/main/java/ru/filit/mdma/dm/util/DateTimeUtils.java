@@ -15,9 +15,11 @@ import java.util.stream.Stream;
 
 public final class DateTimeUtils {
 
-  public static final int MAX_HOUR = 23;
-  public static final int MAX_MINUTE = 59;
-  public static final int MAX_SECOND = 59;
+  private static final int MAX_HOUR = 23;
+  private static final int MAX_MINUTE = 59;
+  private static final int MAX_SECOND = 59;
+
+  private static final LocalDate CURRENT_DATE = LocalDate.of(2021, 12, 31);
 
   private DateTimeUtils() {
     throw new UnsupportedOperationException("Utility class is not instantiable");
@@ -81,7 +83,7 @@ public final class DateTimeUtils {
   }
 
   private static LocalDate getCurrentDate() {
-    return LocalDate.of(2021, 12, 31);
+    return CURRENT_DATE;
   }
 
 }

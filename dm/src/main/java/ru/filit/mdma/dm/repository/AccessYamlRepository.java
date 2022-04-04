@@ -12,10 +12,10 @@ import ru.filit.mdma.dm.model.Access;
 @Repository
 public class AccessYamlRepository extends AbstractYamlRepository<Access> {
 
-  private static final Resource resourceV2 = new ClassPathResource("datafiles/access2.yml");
-  private static final Resource resourceV3 = new ClassPathResource("datafiles/access3.yml");
+  private static final Resource ACCESS_V2 = new ClassPathResource("datafiles/access2.yml");
+  private static final Resource ACCESS_V3 = new ClassPathResource("datafiles/access3.yml");
 
-  private Resource activeResource = resourceV2;
+  private Resource activeResource = ACCESS_V2;
 
   public AccessYamlRepository(YAMLMapper yamlMapper) {
     super(yamlMapper, Access.class);
@@ -23,9 +23,9 @@ public class AccessYamlRepository extends AbstractYamlRepository<Access> {
 
   public void setVersion(String version) {
     if ("2".equals(version)) {
-      activeResource = resourceV2;
+      activeResource = ACCESS_V2;
     } else if ("3".equals(version)) {
-      activeResource = resourceV3;
+      activeResource = ACCESS_V3;
     } else {
       throw new IllegalArgumentException("Access version is unknown");
     }

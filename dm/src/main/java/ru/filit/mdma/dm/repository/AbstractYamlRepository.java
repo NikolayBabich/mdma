@@ -8,12 +8,16 @@ import java.util.List;
 
 public abstract class AbstractYamlRepository<T> implements ReadableRepository<T> {
 
-  protected final YAMLMapper yamlMapper;
+  private final YAMLMapper yamlMapper;
   private final CollectionType collectionType;
 
   protected AbstractYamlRepository(YAMLMapper mapper, Class<? extends T> clazz) {
     this.yamlMapper = mapper;
     this.collectionType = mapper.getTypeFactory().constructCollectionType(List.class, clazz);
+  }
+
+  protected YAMLMapper getYamlMapper() {
+    return yamlMapper;
   }
 
   @Override
