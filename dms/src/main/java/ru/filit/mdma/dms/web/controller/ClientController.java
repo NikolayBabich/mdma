@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.filit.mdma.dms.service.ClientService;
+import ru.filit.mdma.dms.web.RequestDetails;
 import ru.filit.mdma.dms.web.dto.AccountDto;
 import ru.filit.mdma.dms.web.dto.AccountNumberDto;
 import ru.filit.mdma.dms.web.dto.ClientDto;
@@ -48,8 +49,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<ClientDto>> getClient(ClientSearchDto clientSearchDto,
       String userRole, String userName
   ) {
-    String uri = "/dm/client";
-    return ResponseEntity.ok(clientService.findClients(clientSearchDto, userRole, userName, uri));
+    return ResponseEntity.ok(clientService.findClients(clientSearchDto,
+        RequestDetails.create(userRole, userName, "/dm/client"))
+    );
   }
 
   /**
@@ -64,8 +66,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<ContactDto>> getContact(ClientIdDto clientIdDto,
       String userRole, String userName
   ) {
-    String uri = "/dm/client/contact";
-    return ResponseEntity.ok(clientService.findContacts(clientIdDto, userRole, userName, uri));
+    return ResponseEntity.ok(clientService.findContacts(clientIdDto,
+        RequestDetails.create(userRole, userName, "/dm/client/contact"))
+    );
   }
 
   /**
@@ -80,8 +83,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<AccountDto>> getAccount(ClientIdDto clientIdDto,
       String userRole, String userName
   ) {
-    String uri = "/dm/client/account";
-    return ResponseEntity.ok(clientService.findAccounts(clientIdDto, userRole, userName, uri));
+    return ResponseEntity.ok(clientService.findAccounts(clientIdDto,
+        RequestDetails.create(userRole, userName, "/dm/client/account"))
+    );
   }
 
   /**
@@ -96,8 +100,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<CurrentBalanceDto> getAccountBalance(AccountNumberDto accountNumberDto,
       String userRole, String userName
   ) {
-    String uri = "/dm/client/account/balance";
-    return ResponseEntity.ok(clientService.getBalance(accountNumberDto, userRole, userName, uri));
+    return ResponseEntity.ok(clientService.getBalance(accountNumberDto,
+        RequestDetails.create(userRole, userName, "/dm/client/account/balance"))
+    );
   }
 
   /**
@@ -112,9 +117,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<List<OperationDto>> getAccountOperations(
       OperationSearchDto operationSearchDto, String userRole, String userName
   ) {
-    String uri = "/dm/client/account/operation";
-    return ResponseEntity.ok(clientService.findOperations(operationSearchDto, userRole,
-        userName, uri));
+    return ResponseEntity.ok(clientService.findOperations(operationSearchDto,
+        RequestDetails.create(userRole, userName, "/dm/client/account/operation"))
+    );
   }
 
   /**
@@ -129,8 +134,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<ContactDto> saveContact(ContactDto contactDto,
       String userRole, String userName
   ) {
-    String uri = "/dm/client/contact/save";
-    return ResponseEntity.ok(clientService.saveContact(contactDto, userRole, userName, uri));
+    return ResponseEntity.ok(clientService.saveContact(contactDto,
+        RequestDetails.create(userRole, userName, "/dm/client/contact/save"))
+    );
   }
 
   /**
@@ -145,8 +151,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<ClientLevelDto> getClientLevel(ClientIdDto clientIdDto,
       String userRole, String userName
   ) {
-    String uri = "/dm/client/level";
-    return ResponseEntity.ok(clientService.getLevel(clientIdDto, userRole, userName, uri));
+    return ResponseEntity.ok(clientService.getLevel(clientIdDto,
+        RequestDetails.create(userRole, userName, "/dm/client/level"))
+    );
   }
 
   /**
@@ -161,9 +168,9 @@ public class ClientController implements ClientApi {
   public ResponseEntity<LoanPaymentDto> getLoanPayment(AccountNumberDto accountNumberDto,
       String userRole, String userName
   ) {
-    String uri = "/dm/client/account/loan-payment";
-    return ResponseEntity.ok(clientService.getLoanPayment(accountNumberDto, userRole,
-        userName, uri));
+    return ResponseEntity.ok(clientService.getLoanPayment(accountNumberDto,
+        RequestDetails.create(userRole, userName, "/dm/client/account/loan-payment"))
+    );
   }
 
 }

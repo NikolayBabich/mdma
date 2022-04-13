@@ -18,19 +18,19 @@ public class MaskingService {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getMasked(T original, List<AccessDto> accesses) {
-    if (original instanceof List) {
-      List<?> items = (List<?>) original;
+  public <T> T getMasked(T originalDto, List<AccessDto> accesses) {
+    if (originalDto instanceof List) {
+      List<?> items = (List<?>) originalDto;
       if (items.size() > 0) {
         Set<String> allowedProperties = getAllowedProperties(accesses, getEntityName(items.get(0)));
         return (T) items.stream()
             .map(item -> getMaskedItem(item, allowedProperties))
             .collect(Collectors.toList());
       }
-      return original;
+      return originalDto;
     } else {
-      Set<String> allowedProperties = getAllowedProperties(accesses, getEntityName(original));
-      return getMaskedItem(original, allowedProperties);
+      Set<String> allowedProperties = getAllowedProperties(accesses, getEntityName(originalDto));
+      return getMaskedItem(originalDto, allowedProperties);
     }
   }
 
