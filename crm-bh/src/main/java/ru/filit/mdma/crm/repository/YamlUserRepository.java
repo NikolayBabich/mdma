@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
-import ru.filit.mdma.crm.model.UserExtended;
+import ru.filit.mdma.crm.model.User;
 
 @Repository
 public class YamlUserRepository implements UserRepository {
@@ -21,11 +21,11 @@ public class YamlUserRepository implements UserRepository {
   public YamlUserRepository(YAMLMapper mapper) {
     this.yamlMapper = mapper;
     this.collectionType =
-        mapper.getTypeFactory().constructCollectionType(List.class, UserExtended.class);
+        mapper.getTypeFactory().constructCollectionType(List.class, User.class);
   }
 
   @Override
-  public List<UserExtended> readAllUsers() {
+  public List<User> readAllUsers() {
     try {
       return yamlMapper.readValue(yamlResource.getInputStream(), collectionType);
     } catch (IOException e) {

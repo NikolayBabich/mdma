@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.filit.mdma.crm.security.UserAttributes;
 import ru.filit.mdma.crm.service.ClientService;
-import ru.filit.mdma.crm.web.UserDetails;
 import ru.filit.mdma.crm.web.dto.AccountNumberDto;
 import ru.filit.mdma.crm.web.dto.ClientDto;
 import ru.filit.mdma.crm.web.dto.ClientIdDto;
@@ -43,7 +43,8 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/find")
   public ResponseEntity<List<ClientDto>> findClient(ClientSearchDto clientSearchDto) {
-    return ResponseEntity.ok(clientService.findClients(clientSearchDto, UserDetails.ofAuthUser()));
+    return ResponseEntity.ok(clientService.findClients(
+        clientSearchDto, UserAttributes.ofAuthUser()));
   }
 
   /**
@@ -54,7 +55,7 @@ public class ClientController implements ClientApi {
    */
   @PostMapping
   public ResponseEntity<ClientDto> getClient(ClientIdDto clientIdDto) {
-    return ResponseEntity.ok(clientService.getClient(clientIdDto, UserDetails.ofAuthUser()));
+    return ResponseEntity.ok(clientService.getClient(clientIdDto, UserAttributes.ofAuthUser()));
   }
 
   /**
@@ -66,8 +67,7 @@ public class ClientController implements ClientApi {
   @PostMapping("/account/last-operations")
   public ResponseEntity<List<OperationDto>> getLastOperations(AccountNumberDto accountNumberDto) {
     return ResponseEntity.ok(clientService.getLastOperations(
-        accountNumberDto, UserDetails.ofAuthUser())
-    );
+        accountNumberDto, UserAttributes.ofAuthUser()));
   }
 
   /**
@@ -78,7 +78,7 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/contact/save")
   public ResponseEntity<ContactDto> saveContact(ContactDto contactDto) {
-    return ResponseEntity.ok(clientService.saveContact(contactDto, UserDetails.ofAuthUser()));
+    return ResponseEntity.ok(clientService.saveContact(contactDto, UserAttributes.ofAuthUser()));
   }
 
   /**
@@ -89,7 +89,8 @@ public class ClientController implements ClientApi {
    */
   @PostMapping("/level")
   public ResponseEntity<ClientLevelDto> getClientLevel(ClientIdDto clientIdDto) {
-    return ResponseEntity.ok(clientService.getClientLevel(clientIdDto, UserDetails.ofAuthUser()));
+    return ResponseEntity.ok(clientService.getClientLevel(
+        clientIdDto, UserAttributes.ofAuthUser()));
   }
 
   /**
@@ -101,8 +102,7 @@ public class ClientController implements ClientApi {
   @PostMapping("/account/loan-payment")
   public ResponseEntity<LoanPaymentDto> getLoanPayment(AccountNumberDto accountNumberDto) {
     return ResponseEntity.ok(clientService.getLoanPayment(
-        accountNumberDto, UserDetails.ofAuthUser())
-    );
+        accountNumberDto, UserAttributes.ofAuthUser()));
   }
 
 }

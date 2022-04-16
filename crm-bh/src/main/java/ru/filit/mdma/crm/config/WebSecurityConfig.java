@@ -9,19 +9,19 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
   private final UserDetailsService userDetailsService;
-  private final BasicAuthenticationEntryPoint entryPoint;
+  private final AuthenticationEntryPoint entryPoint;
 
   public WebSecurityConfig(
       UserDetailsService userDetailsService,
-      BasicAuthenticationEntryPoint entryPoint
+      AuthenticationEntryPoint entryPoint
   ) {
     this.userDetailsService = userDetailsService;
     this.entryPoint = entryPoint;

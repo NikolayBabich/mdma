@@ -1,23 +1,23 @@
-package ru.filit.mdma.crm.web;
+package ru.filit.mdma.crm.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class UserDetails {
+public class UserAttributes {
 
   private static final String ROLE_PREFIX = "ROLE_";
 
   private final String userRole;
   private final String userName;
 
-  private UserDetails(String userRole, String userName) {
+  private UserAttributes(String userRole, String userName) {
     this.userRole = userRole;
     this.userName = userName;
   }
 
-  public static UserDetails ofAuthUser() {
-    return new UserDetails(getAuthUserRole(), getAuthUserName());
+  public static UserAttributes ofAuthUser() {
+    return new UserAttributes(getAuthUserRole(), getAuthUserName());
   }
 
   public String getUserRole() {

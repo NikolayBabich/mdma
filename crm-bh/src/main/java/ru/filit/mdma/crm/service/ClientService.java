@@ -15,7 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
-import ru.filit.mdma.crm.web.UserDetails;
+import ru.filit.mdma.crm.security.UserAttributes;
 import ru.filit.mdma.crm.web.dto.AccountDto;
 import ru.filit.mdma.crm.web.dto.AccountNumberDto;
 import ru.filit.mdma.crm.web.dto.ClientDto;
@@ -40,13 +40,13 @@ public class ClientService {
     this.webClient = webClient;
   }
 
-  public List<ClientDto> findClients(ClientSearchDto clientSearchDto, UserDetails details) {
-    return sendRequestForList("/", clientSearchDto, new ParameterizedTypeReference<>() {}, details);
+  public List<ClientDto> findClients(ClientSearchDto clientSearchDto, UserAttributes attrs) {
+    return sendRequestForList("/", clientSearchDto, new ParameterizedTypeReference<>() {}, attrs);
   }
 
-  public ClientDto getClient(ClientIdDto clientIdDto, UserDetails details) {
+  public ClientDto getClient(ClientIdDto clientIdDto, UserAttributes attrs) {
     String clientId = clientIdDto.getId();
-    List<ClientDto> clients = findClients(new ClientSearchDto().id(clientId), details);
+    List<ClientDto> clients = findClients(new ClientSearchDto().id(clientId), attrs);
 
     if (clients.isEmpty()) {
       throw new ResponseStatusException(BAD_REQUEST, "No Client id:" + clientId);
@@ -56,15 +56,15 @@ public class ClientService {
     ClientDto client = clients.get(0);
 
     List<ContactDto> contacts = sendRequestForList("/contact", clientIdDto,
-        new ParameterizedTypeReference<>() {}, details);
+        new ParameterizedTypeReference<>() {}, attrs);
     contacts.forEach(client::addContactsItem);
     List<AccountDto> accounts = sendRequestForList("/account", clientIdDto,
-        new ParameterizedTypeReference<>() {}, details);
+        new ParameterizedTypeReference<>() {}, attrs);
     accounts.forEach(client::addAccountsItem);
 
     accounts.forEach(account -> {
       CurrentBalanceDto balance = sendRequestForObject(
-          "/account/balance", accountNumberDto(account), CurrentBalanceDto.class, details);
+          "/account/balance", accountNumberDto(account), CurrentBalanceDto.class, attrs);
       account.balanceAmount(balance.getBalanceAmount());
     });
 
@@ -76,49 +76,49 @@ public class ClientService {
   }
 
   public List<OperationDto> getLastOperations(AccountNumberDto accountNumberDto,
-      UserDetails details
+      UserAttributes attrs
   ) {
     OperationSearchDto search = new OperationSearchDto()
         .accountNumber(accountNumberDto.getAccountNumber())
         .quantity(String.valueOf(LAST_OPERATIONS_QUANTITY));
     return sendRequestForList("/account/operation", search,
-        new ParameterizedTypeReference<>() {}, details);
+        new ParameterizedTypeReference<>() {}, attrs);
   }
 
-  public ContactDto saveContact(ContactDto contactDto, UserDetails details) {
-    return sendRequestForObject("/contact/save", contactDto, ContactDto.class, details);
+  public ContactDto saveContact(ContactDto contactDto, UserAttributes attrs) {
+    return sendRequestForObject("/contact/save", contactDto, ContactDto.class, attrs);
   }
 
-  public ClientLevelDto getClientLevel(ClientIdDto clientIdDto, UserDetails details) {
-    return sendRequestForObject("/level", clientIdDto, ClientLevelDto.class, details);
+  public ClientLevelDto getClientLevel(ClientIdDto clientIdDto, UserAttributes attrs) {
+    return sendRequestForObject("/level", clientIdDto, ClientLevelDto.class, attrs);
   }
 
-  public LoanPaymentDto getLoanPayment(AccountNumberDto accountNumberDto, UserDetails details) {
+  public LoanPaymentDto getLoanPayment(AccountNumberDto accountNumberDto, UserAttributes attrs) {
     return sendRequestForObject("/account/loan-payment", accountNumberDto,
-        LoanPaymentDto.class, details);
+        LoanPaymentDto.class, attrs);
   }
 
   private <T, R> List<R> sendRequestForList(String requestUri, T requestBody,
-      ParameterizedTypeReference<List<R>> responseType, UserDetails details
+      ParameterizedTypeReference<List<R>> responseType, UserAttributes attrs
   ) {
-    Mono<List<R>> mono = getResponseSpec(requestUri, requestBody, details)
+    Mono<List<R>> mono = getResponseSpec(requestUri, requestBody, attrs)
         .bodyToMono(responseType);
     return getSyncResponse(mono);
   }
 
   private <T, R> R sendRequestForObject(String requestUri, T requestBody,
-      Class<R> responseType, UserDetails details
+      Class<R> responseType, UserAttributes attrs
   ) {
-    Mono<R> mono = getResponseSpec(requestUri, requestBody, details)
+    Mono<R> mono = getResponseSpec(requestUri, requestBody, attrs)
         .bodyToMono(responseType);
     return getSyncResponse(mono);
   }
 
-  private <T> ResponseSpec getResponseSpec(String requestUri, T requestBody, UserDetails details) {
+  private <T> ResponseSpec getResponseSpec(String requestUri, T requestBody, UserAttributes attrs) {
     return webClient.post()
         .uri(requestUri)
-        .header("CRM-User-Role", details.getUserRole())
-        .header("CRM-User-Name", details.getUserName())
+        .header("CRM-User-Role", attrs.getUserRole())
+        .header("CRM-User-Name", attrs.getUserName())
         .bodyValue(requestBody)
         .retrieve()
         .onStatus(HttpStatus::isError,
