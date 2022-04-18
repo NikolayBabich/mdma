@@ -1,5 +1,5 @@
 # Components configuration
 system.element:
   queue:
-    host: "[::1]"
+    host: localhost
     port: 9092

@@ -1,8 +1,6 @@
 package ru.filit.mdma.dms.service;
 
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
-import static ru.filit.mdma.dms.model.EventType.REQUEST;
-import static ru.filit.mdma.dms.model.EventType.RESPONSE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Duration;
@@ -10,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,8 +16,9 @@ import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import ru.filit.mdma.dms.model.EventType;
 import ru.filit.mdma.dms.util.MaskingService;
-import ru.filit.mdma.dms.web.RequestDetails;
+import ru.filit.mdma.dms.model.RequestDetails;
 import ru.filit.mdma.dms.web.dto.AccessDto;
 import ru.filit.mdma.dms.web.dto.AccessRequestDto;
 import ru.filit.mdma.dms.web.dto.AccountDto;
@@ -36,7 +36,7 @@ import ru.filit.mdma.dms.web.dto.OperationSearchDto;
 @Service
 public class ClientService {
 
-  private static final String VERSION = "3";
+  private static final String ACCESS_VERSION = "3";
   private static final int TIMEOUT_IN_SECONDS = 5;
   private static final int ID_LOWER_BOUND = 10_000_000;
   private static final int ID_UPPER_BOUND = 100_000_000;
@@ -57,147 +57,105 @@ public class ClientService {
   }
 
   public List<AccessDto> getAccess(String role) {
-    return sendRequestForList("/access", new AccessRequestDto(role, VERSION),
-        new ParameterizedTypeReference<>() {});
+    return sendRequestForList("/access", new AccessRequestDto(role, ACCESS_VERSION),
+        AccessDto.class);
   }
 
   public List<ClientDto> findClients(ClientSearchDto clientSearchDto, RequestDetails details) {
-    int requestId = generateRequestId();
-    ClientSearchDto unmasked = unmask(clientSearchDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
-
-    List<ClientDto> clients = sendRequestForList("/client", unmasked,
-        new ParameterizedTypeReference<>() {});
-
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(clients, getAccess(AUDITOR)));
-
-    return mask(clients, getAccess(details.getUserRole()));
+    return processForList("/client", clientSearchDto, ClientDto.class, details);
   }
 
   public List<ContactDto> findContacts(ClientIdDto clientIdDto, RequestDetails details) {
-    int requestId = generateRequestId();
-    ClientIdDto unmasked = unmask(clientIdDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
-
-    List<ContactDto> contacts = sendRequestForList("/client/contact", unmask(clientIdDto),
-        new ParameterizedTypeReference<>() {});
-
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(contacts, getAccess(AUDITOR)));
-
-    return mask(contacts, getAccess(details.getUserRole()));
+    return processForList("/client/contact", clientIdDto, ContactDto.class, details);
   }
 
   public List<AccountDto> findAccounts(ClientIdDto clientIdDto, RequestDetails details) {
-    int requestId = generateRequestId();
-    ClientIdDto unmasked = unmask(clientIdDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
-
-    List<AccountDto> accounts = sendRequestForList("/client/account", unmask(clientIdDto),
-        new ParameterizedTypeReference<>() {});
-
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(accounts, getAccess(AUDITOR)));
-
-    return mask(accounts, getAccess(details.getUserRole()));
+    return processForList("/client/account", clientIdDto, AccountDto.class, details);
   }
 
   public CurrentBalanceDto getBalance(AccountNumberDto accountNumberDto, RequestDetails details) {
-    int requestId = generateRequestId();
-    AccountNumberDto unmasked = unmask(accountNumberDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
-
-    CurrentBalanceDto balance = sendRequestForObject("/client/account/balance",
-        unmask(accountNumberDto), CurrentBalanceDto.class);
-
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(balance, getAccess(AUDITOR)));
-
-    return mask(balance, getAccess(details.getUserRole()));
+    return processForObject("/client/account/balance", accountNumberDto, CurrentBalanceDto.class,
+        details);
   }
 
   public List<OperationDto> findOperations(OperationSearchDto operationSearchDto,
       RequestDetails details
   ) {
-    int requestId = generateRequestId();
-    OperationSearchDto unmasked = unmask(operationSearchDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
-
-    List<OperationDto> operations = sendRequestForList("/client/account/operation",
-        unmask(operationSearchDto), new ParameterizedTypeReference<>() {});
-
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(operations, getAccess(AUDITOR)));
-
-    return mask(operations, getAccess(details.getUserRole()));
+    return processForList("/client/account/operation", operationSearchDto, OperationDto.class,
+        details);
   }
 
   public ContactDto saveContact(ContactDto contactDto, RequestDetails details) {
-    int requestId = generateRequestId();
-    ContactDto unmasked = unmask(contactDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
-
-    ContactDto contact = sendRequestForObject("/client/contact/save", unmask(contactDto),
-        ContactDto.class);
-
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(contact, getAccess(AUDITOR)));
-
-    return mask(contact, getAccess(details.getUserRole()));
+    return processForObject("/client/contact/save", contactDto, ContactDto.class, details);
   }
 
   public ClientLevelDto getLevel(ClientIdDto clientIdDto, RequestDetails details) {
-    int requestId = generateRequestId();
-    ClientIdDto unmasked = unmask(clientIdDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
-
-    ClientLevelDto clientLevel = sendRequestForObject("/client/level", unmask(clientIdDto),
-        ClientLevelDto.class);
-
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(clientLevel, getAccess(AUDITOR)));
-
-    return mask(clientLevel, getAccess(details.getUserRole()));
+    return processForObject("/client/level", clientIdDto, ClientLevelDto.class, details);
   }
 
   public LoanPaymentDto getLoanPayment(AccountNumberDto accountNumberDto, RequestDetails details) {
+    return processForObject("/client/account/loan-payment", accountNumberDto, LoanPaymentDto.class,
+        details);
+  }
+
+  private <T, R> List<R> processForList(String uri, T requestDto, Class<R> responseClass,
+      RequestDetails details
+  ) {
     int requestId = generateRequestId();
-    AccountNumberDto unmasked = unmask(accountNumberDto);
-    auditService.audit(requestId, details.getUserName(), REQUEST, details.getUri(), unmasked);
+    T unmasked = unmask(requestDto);
+    auditRequest(requestId, unmasked, details);
 
-    LoanPaymentDto loanPayment = sendRequestForObject("/client/account/loan-payment",
-        unmask(accountNumberDto), LoanPaymentDto.class);
+    List<R> responseDto = sendRequestForList(uri, unmasked, responseClass);
+    auditResponse(requestId, responseDto, details);
 
-    auditService.audit(requestId, details.getUserName(), RESPONSE, details.getUri(),
-        mask(loanPayment, getAccess(AUDITOR)));
+    return mask(responseDto, getAccess(details.getUserRole()));
+  }
 
-    return mask(loanPayment, getAccess(details.getUserRole()));
+  private <T, R> R processForObject(String uri, T requestDto, Class<R> responseClass,
+      RequestDetails details
+  ) {
+    int requestId = generateRequestId();
+    T unmasked = unmask(requestDto);
+    auditRequest(requestId, unmasked, details);
+
+    R responseDto = sendRequestForObject(uri, unmasked, responseClass);
+    auditResponse(requestId, responseDto, details);
+
+    return mask(responseDto, getAccess(details.getUserRole()));
   }
 
   private int generateRequestId() {
     return RandomUtils.nextInt(ID_LOWER_BOUND, ID_UPPER_BOUND);
   }
 
-  public <T> T mask(T originalDto, List<AccessDto> access) {
+  private <T> void auditRequest(int requestId, T dto, RequestDetails details) {
+    auditService.audit(requestId, details.getUserName(), EventType.REQUEST, details.getUri(), dto);
+  }
+
+  private <T> void auditResponse(int requestId, T dto, RequestDetails details) {
+    auditService.audit(requestId, details.getUserName(), EventType.RESPONSE, details.getUri(),
+        mask(dto, getAccess(AUDITOR)));
+  }
+
+  private <T> T mask(T originalDto, List<AccessDto> access) {
     return maskingService.getMasked(originalDto, access);
   }
 
-  public <T> T unmask(T maskedDto) {
+  private <T> T unmask(T maskedDto) {
     return maskingService.getUnmasked(maskedDto);
   }
 
   private <T, R> List<R> sendRequestForList(String requestUri, T requestBody,
-      ParameterizedTypeReference<List<R>> responseType
+      Class<R> responseClass
   ) {
-    Mono<List<R>> mono = getResponseSpec(requestUri, requestBody)
-        .bodyToMono(responseType);
+    ParameterizedTypeReference<List<R>> responseTypeRef = ParameterizedTypeReference.forType(
+        ResolvableType.forClassWithGenerics(List.class, responseClass).getType());
+    Mono<List<R>> mono = getResponseSpec(requestUri, requestBody).bodyToMono(responseTypeRef);
     return getSyncResponse(mono);
   }
 
-  private <T, R> R sendRequestForObject(String requestUri, T requestBody, Class<R> responseType) {
-    Mono<R> mono = getResponseSpec(requestUri, requestBody)
-        .bodyToMono(responseType);
+  private <T, R> R sendRequestForObject(String requestUri, T requestBody, Class<R> responseClass) {
+    Mono<R> mono = getResponseSpec(requestUri, requestBody).bodyToMono(responseClass);
     return getSyncResponse(mono);
   }
 

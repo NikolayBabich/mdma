@@ -17,7 +17,7 @@ system.element:
     host: localhost
     port: 8082
   queue:
-    host: "[::1]"
+    host: localhost
     port: 9092
 
 logging.level:

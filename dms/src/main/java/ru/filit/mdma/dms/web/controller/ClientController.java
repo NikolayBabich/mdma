@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.filit.mdma.dms.service.ClientService;
-import ru.filit.mdma.dms.web.RequestDetails;
+import ru.filit.mdma.dms.model.RequestDetails;
 import ru.filit.mdma.dms.web.dto.AccountDto;
 import ru.filit.mdma.dms.web.dto.AccountNumberDto;
 import ru.filit.mdma.dms.web.dto.ClientDto;

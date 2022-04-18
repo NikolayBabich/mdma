@@ -1,4 +1,4 @@
-package ru.filit.mdma.dms.web;
+package ru.filit.mdma.dms.model;
 
 public class RequestDetails {
 
